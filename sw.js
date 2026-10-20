@@ -1,11 +1,11 @@
 // Offline support: everything the app needs is cached on first visit, so it opens and works with no connection.
 // Pages are network-first (so updates arrive when online) and fall back to the cache offline.
-const CACHE = "runway-v4";
+const CACHE = "runway-v5";
 const SHELL = [
   "./", "./index.html", "./manifest.webmanifest",
   "./icons/icon-192.png", "./icons/icon-512.png", "./icons/apple-touch-icon.png",
   "./fonts/fonts.css",  "./fonts/BricolageGrotesque-500-700-latin-4efd1a.woff2",  "./fonts/BricolageGrotesque-500-700-latin-ext-6441e9.woff2",  "./fonts/HankenGrotesk-400-latin-ext-d9a6a0.woff2",  "./fonts/HankenGrotesk-400-latin-fe1634.woff2",  "./fonts/IBMPlexMono-400-latin-d77319.woff2",  "./fonts/IBMPlexMono-400-latin-ext-9994c1.woff2",  "./fonts/IBMPlexMono-500-latin-8d0aea.woff2",  "./fonts/IBMPlexMono-500-latin-ext-60d1ee.woff2",
-  "./vendor/xlsx.full.min.js",
+  "./vendor/xlsx.full.min.js", "./vendor/pdf.min.js", "./vendor/pdf.worker.min.js",
 ];
 
 self.addEventListener("install", e => {

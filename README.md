@@ -3,8 +3,10 @@
 A private budget and expense tracker in rupees. Live at **https://akreus29.github.io/runway/**
 
 - **Safe to spend per day**: how much you can spend each day for the rest of the month and still finish on plan. Fixed bills (rent, EMIs, recharges) are set aside first.
-- **Bank statement import** (Excel or CSV from HDFC, SBI, ICICI, Axis, Kotak and others). Upload a statement as often as you like, even overlapping ones: Runway adds only the rows it hasn't seen, and links payments you already typed in by hand instead of doubling them.
+- **Bank statement import** (PDF, Excel or CSV from Axis, HDFC, SBI, ICICI, Kotak and others; password-protected PDFs too). Statements are read on the device and never uploaded. Upload a statement as often as you like, even overlapping ones: Runway adds only the rows it hasn't seen, and links payments you already typed in by hand instead of doubling them.
 - **Automatic categories** for Indian merchants and UPI narrations, then a review step: check only the payments that didn't match, or every new row. Pick a category once and every payment to that shop or person follows, now and in future imports.
+- **Rent detection**: enter your landlord's name once and every payment to them is filed as rent. Transfers between your own accounts and failed payments the bank refunded are left out automatically.
+- **Last 3 months** side by side, with regular payments (rent, EMIs, subscriptions) and whether this month's has gone out yet.
 - **Last-month review, Year view and a year-end Wrapped** you can save as an image.
 
 ## Works offline, keeps your data
@@ -23,4 +25,4 @@ Open the link in Safari, tap **Share → Add to Home Screen**. It opens full-scr
 
 ## Development
 
-A static site with no build step: `index.html`, a service worker (`sw.js`), local fonts in `fonts/`, and SheetJS in `vendor/` for reading Excel statements. Serve the folder with any static server to run it locally. Bump `CACHE` in `sw.js` when you change files so installed copies update.
+A static site with no build step: `index.html`, a service worker (`sw.js`), local fonts in `fonts/`, and SheetJS and pdf.js in `vendor/` for reading Excel and PDF statements. Serve the folder with any static server to run it locally. Bump `CACHE` in `sw.js` when you change files so installed copies update.

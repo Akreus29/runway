@@ -50,6 +50,7 @@ table.m3 .bud{display:block;font-size:.72rem;color:var(--muted);font-weight:500}
 .li.reg{grid-template-columns:minmax(0,1fr) auto auto}
 .li.reg .c{grid-column:1 / 3}
 .li.reg .pill{grid-column:3;grid-row:1 / span 2;align-self:center}
+.li.reg .rent-btn{grid-column:1 / 3;justify-self:start;padding:3px 8px;margin-top:2px;color:var(--accent-ink)}
 .two-col-list{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:28px}
 @media (max-width:700px){.two-col-list{grid-template-columns:1fr}}
 .imp-months{display:flex;flex-wrap:wrap;gap:8px}
@@ -565,24 +566,26 @@ function parseAmt(s) {
    ============================================================ */
 const DEFAULT_CATS = [
   { id: "housing", name: "Rent & housing", budget: 18000, kind: "fixed", keywords: ["rent", "house rent", "nobroker", "nestaway", "housing.com", "landlord", "society maintenance", "maintenance charges", "apartment association", "pg rent"] },
-  { id: "bills", name: "Bills & recharges", budget: 3000, kind: "fixed", keywords: ["electricity", "bescom", "msedcl", "mahadiscom", "tata power", "adani electricity", "bses", "tneb", "tangedco", "kseb", "cesc", "torrent power", "tsspdcl", "uppcl", "airtel", "jio", "vodafone", "vi postpaid", "vi prepaid", "bsnl", "act fibernet", "hathway", "excitel", "broadband", "recharge", "tata play", "dish tv", "sun direct", "mahanagar gas", "indraprastha gas", "igl", "indane", "bharat gas", "hp gas", "lpg", "cylinder", "water bill", "bwssb", "property tax"] },
-  { id: "groceries", name: "Groceries & kirana", budget: 7000, kind: "everyday", keywords: ["bigbasket", "blinkit", "zepto", "instamart", "swiggy instamart", "dmart", "avenue supermarts", "reliance fresh", "reliance smart", "jiomart", "more retail", "more supermarket", "spencer", "nature's basket", "star bazaar", "ratnadeep", "kirana", "provision", "general store", "supermarket", "grocery", "groceries", "vegetable", "sabzi", "fruits", "milk", "dairy", "amul", "nandini", "mother dairy", "country delight", "milkbasket", "licious", "freshtohome", "bb daily", "flipkart minutes", "amazon fresh"] },
-  { id: "food", name: "Food delivery & eating out", budget: 5000, kind: "everyday", keywords: ["swiggy", "zomato", "eatsure", "domino", "pizza hut", "mcdonald", "kfc", "burger king", "subway", "starbucks", "chaayos", "chai point", "cafe coffee day", "ccd", "haldiram", "barbeque nation", "behrouz", "faasos", "box8", "wow momo", "third wave", "blue tokai", "restaurant", "cafe", "dhaba", "bakery", "sweets", "mithai", "biryani", "canteen", "mess", "juice", "theobroma", "baskin"] },
-  { id: "transport", name: "Transport & fuel", budget: 3500, kind: "everyday", keywords: ["uber", "ola", "olacabs", "rapido", "namma yatri", "blusmart", "metro", "dmrc", "bmrcl", "mmrcl", "fastag", "toll", "parking", "indian oil", "iocl", "bharat petroleum", "bpcl", "hpcl", "hindustan petroleum", "petrol", "diesel", "fuel", "shell", "nayara", "yulu", "bounce", "auto rickshaw", "cab"] },
-  { id: "shopping", name: "Shopping", budget: 4000, kind: "everyday", keywords: ["amazon", "amzn", "flipkart", "myntra", "ajio", "meesho", "nykaa", "tata cliq", "croma", "reliance digital", "vijay sales", "decathlon", "ikea", "lifestyle", "westside", "pantaloons", "max fashion", "zudio", "h&m", "zara", "uniqlo", "shoppers stop", "firstcry", "lenskart", "pepperfry", "urban ladder", "snapdeal", "boat", "titan", "tanishq", "bata"] },
-  { id: "subscriptions", name: "Subscriptions & OTT", budget: 1000, kind: "fixed", keywords: ["netflix", "hotstar", "jiohotstar", "jiocinema", "prime video", "amazon prime", "sonyliv", "zee5", "spotify", "youtube premium", "youtube", "apple.com/bill", "icloud", "google one", "google play", "chatgpt", "openai", "claude.ai", "anthropic", "linkedin premium", "swiggy one", "zomato gold", "times prime", "audible", "kindle unlimited"] },
+  { id: "bills", name: "Bills & recharges", budget: 3000, kind: "fixed", keywords: ["electricity", "bescom", "msedcl", "mahadiscom", "tata power", "adani electricity", "bses", "tneb", "tangedco", "kseb", "cesc", "torrent power", "tsspdcl", "uppcl", "airtel", "jio", "vodafone", "vi postpaid", "vi prepaid", "bsnl", "act fibernet", "hathway", "excitel", "broadband", "recharge", "tata play", "dish tv", "sun direct", "mahanagar gas", "indraprastha gas", "igl", "indane", "bharat gas", "hp gas", "lpg", "cylinder", "water bill", "bwssb", "property tax", "communication", "bharti airtel"] },
+  { id: "groceries", name: "Groceries & kirana", budget: 7000, kind: "everyday", keywords: ["bigbasket", "blinkit", "zepto", "instamart", "swiggy instamart", "dmart", "avenue supermarts", "reliance fresh", "reliance smart", "jiomart", "more retail", "more supermarket", "spencer", "nature's basket", "star bazaar", "ratnadeep", "kirana", "provision", "general store", "supermarket", "grocery", "groceries", "vegetable", "sabzi", "fruits", "milk", "dairy", "amul", "nandini", "mother dairy", "country delight", "milkbasket", "licious", "freshtohome", "bb daily", "flipkart minutes", "amazon fresh", "mart", "store", "kirana store"] },
+  { id: "food", name: "Food delivery & eating out", budget: 5000, kind: "everyday", keywords: ["swiggy", "zomato", "eatsure", "domino", "pizza hut", "mcdonald", "kfc", "burger king", "subway", "starbucks", "chaayos", "chai point", "cafe coffee day", "ccd", "haldiram", "barbeque nation", "behrouz", "faasos", "box8", "wow momo", "third wave", "blue tokai", "restaurant", "cafe", "dhaba", "bakery", "sweets", "mithai", "biryani", "canteen", "mess", "juice", "theobroma", "baskin", "connaught plaza", "munchmart", "jubilant foodworks", "restaurant brands", "justswish", "swish", "tea", "snack", "snacks", "chole", "momos", "foods", "kulfi", "paan", "pan shop", "eatery", "bake"] },
+  { id: "transport", name: "Transport & fuel", budget: 3500, kind: "everyday", keywords: ["uber", "ola", "olacabs", "rapido", "namma yatri", "blusmart", "metro", "dmrc", "bmrcl", "mmrcl", "fastag", "toll", "parking", "indian oil", "iocl", "bharat petroleum", "bpcl", "hpcl", "hindustan petroleum", "petrol", "diesel", "fuel", "shell", "nayara", "yulu", "bounce", "auto rickshaw", "cab", "energy sta", "fuel station", "filling station", "service station", "petro"] },
+  { id: "shopping", name: "Shopping", budget: 4000, kind: "everyday", keywords: ["amazon", "amzn", "flipkart", "myntra", "ajio", "meesho", "nykaa", "tata cliq", "croma", "reliance digital", "vijay sales", "decathlon", "ikea", "lifestyle", "westside", "pantaloons", "max fashion", "zudio", "h&m", "zara", "uniqlo", "shoppers stop", "firstcry", "lenskart", "pepperfry", "urban ladder", "snapdeal", "boat", "titan", "tanishq", "bata", "computer"] },
+  { id: "subscriptions", name: "Subscriptions & OTT", budget: 1000, kind: "fixed", keywords: ["netflix", "hotstar", "jiohotstar", "jiocinema", "prime video", "amazon prime", "sonyliv", "zee5", "spotify", "youtube premium", "youtube", "apple.com/bill", "icloud", "google one", "google play", "chatgpt", "openai", "claude.ai", "anthropic", "linkedin premium", "swiggy one", "zomato gold", "times prime", "audible", "kindle unlimited", "apple med", "apple media", "apple services", "itunes"] },
   { id: "health", name: "Health & medicines", budget: 1500, kind: "everyday", keywords: ["pharmacy", "chemist", "medical store", "medicals", "medplus", "apollo", "pharmeasy", "1mg", "netmeds", "practo", "hospital", "clinic", "diagnostic", "thyrocare", "lal path", "dental", "doctor", "cult.fit", "cultfit", "curefit", "gym", "fitness", "yoga"] },
-  { id: "household", name: "Household help & services", budget: 4000, kind: "fixed", keywords: ["maid", "house help", "cook", "driver salary", "nanny", "urban company", "urbanclap", "laundry", "dry clean", "ironing", "plumber", "electrician", "pest control", "carpenter"] },
-  { id: "personal", name: "Personal care", budget: 1000, kind: "everyday", keywords: ["salon", "parlour", "parlor", "barber", "haircut", "spa", "lakme", "grooming"] },
+  { id: "household", name: "Household help & services", budget: 4000, kind: "fixed", keywords: ["maid", "house help", "cook", "driver salary", "nanny", "urban company", "urbanclap", "laundry", "dry clean", "ironing", "plumber", "electrician", "pest control", "carpenter", "urbancompany"] },
+  { id: "personal", name: "Personal care", budget: 1000, kind: "everyday", keywords: ["salon", "parlour", "parlor", "barber", "haircut", "spa", "lakme", "grooming", "makeover", "beauty", "unisex"] },
   { id: "entertainment", name: "Movies & outings", budget: 1500, kind: "everyday", keywords: ["bookmyshow", "pvr", "inox", "cinepolis", "district", "paytm movies", "steam", "playstation", "gaming", "concert", "wonderla", "imagica", "smaaash", "timezone", "bowling", "museum"] },
   { id: "travel", name: "Travel", budget: 3000, kind: "everyday", keywords: ["irctc", "indian railways", "makemytrip", "goibibo", "cleartrip", "yatra", "ixigo", "redbus", "abhibus", "indigo", "interglobe", "air india", "akasa", "spicejet", "vistara", "airbnb", "oyo", "treebo", "fabhotels", "zostel", "airport"] },
-  { id: "education", name: "Education", budget: 0, kind: "everyday", keywords: ["school fee", "college", "tuition", "coaching", "byju", "unacademy", "vedantu", "physics wallah", "udemy", "coursera", "upgrad", "exam fee", "stationery", "books"] },
+  { id: "education", name: "Education", budget: 0, kind: "everyday", keywords: ["school fee", "college", "tuition", "coaching", "byju", "unacademy", "vedantu", "physics wallah", "udemy", "coursera", "upgrad", "exam fee", "stationery", "books", "institute", "university"] },
   { id: "emi", name: "EMIs & loans", budget: 0, kind: "fixed", keywords: ["emi", "loan", "bajaj finance", "bajaj finserv", "tata capital", "home credit", "hdb financial", "lazypay", "simpl", "zestmoney", "credit card bill"] },
   { id: "insurance", name: "Insurance", budget: 1500, kind: "fixed", keywords: ["lic", "life insurance", "policybazaar", "star health", "hdfc ergo", "icici lombard", "icici pru", "max life", "sbi life", "care health", "niva bupa", "acko", "digit insurance", "go digit", "tata aia", "insurance"] },
-  { id: "gifts", name: "Gifts, festivals & giving", budget: 1000, kind: "everyday", keywords: ["gift", "gifts", "diwali", "rakhi", "holi", "wedding", "shagun", "crackers", "puja", "pooja", "temple", "mandir", "gurudwara", "donation", "charity", "ferns n petals", "fnp", "igp", "archies"] },
+  { id: "gifts", name: "Gifts, festivals & giving", budget: 1000, kind: "everyday", keywords: ["gift", "gifts", "diwali", "rakhi", "holi", "wedding", "shagun", "crackers", "puja", "pooja", "temple", "mandir", "gurudwara", "donation", "charity", "ferns n petals", "fnp", "igp", "archies", "phool", "flower", "florist"] },
   { id: "invest", name: "SIPs & investments", budget: 10000, kind: "saving", keywords: ["sip", "mutual fund", "zerodha", "groww", "kuvera", "upstox", "angel one", "paytm money", "et money", "smallcase", "indian clearing corp", "iccl", "bse star", "nse clearing", "ppf", "nps", "recurring deposit", "fixed deposit"] },
+  { id: "drinks", name: "Alcohol & nightlife", budget: 1500, kind: "everyday", keywords: ["liquor", "liqour", "wine", "beer", "brewery", "brewpub", "pub", "bar", "lounge", "whisky", "spirits"] },
   { id: "other", name: "Other", budget: 2000, kind: "everyday", keywords: [] },
 ];
+const CATS_V = 2;   // bump when DEFAULT_CATS gains keywords or categories; saved budgets pick them up once
 const KINDS = { everyday: "Everyday", fixed: "Fixed bill", saving: "Savings & SIP" };
 
 let kwIndex = null;
@@ -597,7 +600,7 @@ function buildKwIndex() {
 }
 // "UPI-SWIGGY LIMITED-swiggy@axis-UTIB0000-6287..." or "UPI/DR/6287.../ZOMATO/HDFC/..." -> "Swiggy Limited" / "Zomato"
 function prettyMerchant(desc) {
-  let s = String(desc || "").trim().replace(/^(?:n?ach\s*(?:d|dr|db)?|ecs|bil|ib\s*billpay)\s*[-\/:]\s*/i, "");
+  let s = String(desc || "").trim().replace(/\bM\/S\.?\s*/gi, "M S ").replace(/^(?:n?ach\s*(?:d|dr|db)?|ecs|bil|ib\s*billpay)\s*[-\/:]\s*/i, "");
   const m = s.match(/^(?:upi|imps|neft|rtgs|pos)\s*[-\/:]\s*(?:(?:p2m|p2a|dr|cr|in|out)\s*[-\/]\s*)?(?:\d{6,}\s*[-\/]\s*)?([^-\/@|]+)/i);
   if (m && /[a-z]/i.test(m[1])) s = m[1];
   s = s.replace(/\s+/g, " ").trim();
@@ -611,7 +614,27 @@ function merchantKey(desc) {
   s = s.replace(/[#*][\w-]*/g, " ").replace(/\d+/g, " ").replace(/[^a-z&' ]/g, " ").replace(/\s+/g, " ").trim();
   return s.split(" ").filter(w => w.length > 1).slice(0, 2).join(" ");
 }
+// "Shiwani Singh" matches "UPI/P2A/621728927204/SHIWANI SINGH /UPI/..." and truncated forms like "SHIWANI SIN"
+function nameMatches(name, desc) {
+  const nt = String(name || "").toLowerCase().split(/[^a-z]+/).filter(Boolean);
+  if (!nt.length || nt[0].length < 3) return false;
+  const pn = prettyMerchant(desc).toLowerCase().replace(/^(mr|mrs|ms|miss|dr)\.?\s+/, "").split(/[^a-z]+/).filter(Boolean);
+  const i = pn.indexOf(nt[0]); if (i < 0) return false;
+  for (let k = 1; k < nt.length; k++) { const w = pn[i + k]; if (!w) return true; if (!(nt[k].startsWith(w) || w.startsWith(nt[k]))) return false; }
+  return true;
+}
+const landlordOf = desc => (S.settings.landlords || []).find(n => nameMatches(n, desc));
+function applyLandlords(quiet) {
+  if (!catById("housing")) return 0;
+  let n = 0; const touched = new Set();
+  for (const [mk, list] of Object.entries(S.months)) for (const t of list) if (t.type !== "income" && t.cat !== "housing" && (t.auto || t.cat === "other") && landlordOf(t.desc)) { t.cat = "housing"; t.auto = true; n++; touched.add(mk); }
+  if (touched.size) persist();
+  if (!quiet) { const names = (S.settings.landlords || []).join(" and "); toast(n ? `Found ${n} rent ${n === 1 ? "payment" : "payments"} to ${names}. They're filed under ${catName("housing")} now.` : names ? `No payments to ${names} yet. When they show up in a statement, they'll be filed as rent.` : "Landlord removed."); }
+  return n;
+}
 function suggest(desc) {
+  const ll = landlordOf(desc);
+  if (ll && catById("housing")) return { cat: "housing", why: "landlord", kw: ll };
   const key = merchantKey(desc);
   const rules = S.settings.rules || {};
   if (key && rules[key] && catById(rules[key])) return { cat: rules[key], why: "learned", kw: key };
@@ -642,7 +665,14 @@ function normalizeSettings(s) {
     ? s.categories.map(c => ({ id: String(c.id), name: String(c.name || "Untitled"), budget: Math.max(0, +c.budget || 0), kind: KINDS[c.kind] ? c.kind : (c.fixed ? "fixed" : "everyday"), keywords: Array.isArray(c.keywords) ? c.keywords.map(String) : [] }))
     : clone(DEFAULT_CATS);
   if (!cats.some(c => c.id === "other")) cats.push({ id: "other", name: "Other", budget: 0, kind: "everyday", keywords: [] });
-  return { currency: "INR", income: Math.max(0, +s.income || 0), savingsGoal: Math.max(0, +s.savingsGoal || 0), categories: cats, rules: s.rules && typeof s.rules === "object" ? { ...s.rules } : {}, imports: Array.isArray(s.imports) ? s.imports.slice(0, 24) : [] };
+  if ((+s.catsVersion || 1) < CATS_V && Array.isArray(s.categories) && s.categories.length) {
+    for (const d of DEFAULT_CATS) {
+      const c = cats.find(x => x.id === d.id);
+      if (c) c.keywords = [...new Set([...c.keywords, ...d.keywords])];
+      else cats.splice(cats.findIndex(x => x.id === "other"), 0, { ...clone(d), budget: 0 });
+    }
+  }
+  return { currency: "INR", income: Math.max(0, +s.income || 0), savingsGoal: Math.max(0, +s.savingsGoal || 0), categories: cats, rules: s.rules && typeof s.rules === "object" ? { ...s.rules } : {}, landlords: Array.isArray(s.landlords) ? s.landlords.map(String).filter(Boolean).slice(0, 5) : [], ownName: String(s.ownName || "").slice(0, 60), catsVersion: CATS_V, imports: Array.isArray(s.imports) ? s.imports.slice(0, 24) : [] };
 }
 function normalizeTx(t) {
   const o = { id: String(t.id || newId()), date: String(t.date || todayISO()).slice(0, 10), desc: String(t.desc || ""), amount: Math.abs(+t.amount || 0), type: t.type === "income" ? "income" : "expense", cat: String(t.cat || "other"), auto: t.auto !== false, note: String(t.note || "") };
@@ -1344,8 +1374,15 @@ function view3m() {
   const byNow = blocks.map(b => b.has ? b.st.cum[Math.min(d, b.st.n) - 1] || 0 : null);
   const prevByNow = byNow.slice(0, 2).filter(v => v !== null), avgByNow = prevByNow.length ? sum(prevByNow) / prevByNow.length : null;
   const diffNow = avgByNow === null ? 0 : byNow[2] - avgByNow;
+  const usualIncome = typicalOf(blocks, b => b.income) || 0;
   const cards = blocks.map((b, i) => {
     const rate = b.income > 0 ? Math.round(b.saved / b.income * 100) : null;
+    if (b.isCur && b.has) {
+      const expIncome = Math.max(b.income, S.settings.income, usualIncome), paceSave = expIncome - o.projected;
+      return `<div class="m3-card cur"><div class="m3-top"><i style="background:var(--${SERIES[i]})"></i><span class="eyebrow">${esc(monthLong(b.mk))} · to ${d} ${esc(monthShort(b.mk))}</span></div>
+        <b class="num">${esc(money(b.st.spent))}</b><span class="m3-sub">spent so far · on pace for ${esc(money(o.projected))}</span>
+        <dl><div><dt>Income so far</dt><dd>${esc(money(b.income))}${expIncome > b.income + 1 ? ` <span class="muted">usually ${esc(money(expIncome))}</span>` : ""}</dd></div><div><dt>On pace to save</dt><dd>${esc(money(paceSave))}${expIncome > 0 ? ` <span class="muted">${Math.round(paceSave / expIncome * 100)}%</span>` : ""}</dd></div>${b.st.invested ? `<div><dt>Into SIPs</dt><dd>${esc(money(b.st.invested))}</dd></div>` : ""}</dl></div>`;
+    }
     return `<div class="m3-card${b.isCur ? " cur" : ""}"><div class="m3-top"><i style="background:var(--${SERIES[i]})"></i><span class="eyebrow">${esc(monthLong(b.mk))}${b.isCur ? ` · to ${d} ${esc(monthShort(b.mk))}` : ""}</span></div>
       ${b.has ? `<b class="num">${esc(money(b.st.spent))}</b><span class="m3-sub">${b.isCur ? `spent so far · on pace for ${esc(money(o.projected))}` : `spent · ${b.st.count} purchases`}</span>
       <dl><div><dt>Income</dt><dd>${esc(money(b.income))}</dd></div><div><dt>${b.isCur ? "Saved so far" : "Saved"}</dt><dd>${esc(money(b.saved))}${rate !== null && !b.isCur ? ` <span class="muted">${rate}%</span>` : ""}</dd></div>${b.st.invested ? `<div><dt>Into SIPs</dt><dd>${esc(money(b.st.invested))}</dd></div>` : ""}</dl>`
@@ -1372,6 +1409,7 @@ function view3m() {
   // regular payments
   const regs = regularPayments(mks), toCome = sum(regs.filter(r => r.status !== "paid").map(r => r.amount));
   const regHTML = regs.length ? `<div class="list">${regs.map(r => `<div class="li reg"><span class="a">${esc(r.name)}</span><span class="b">${esc(money(r.amount))}</span><span class="c">${esc(catName(r.cat))} · usually around the ${ordinal(r.day)}</span>
+      ${r.cat === "other" && r.amount >= 5000 && catById("housing") ? `<button class="btn ghost sm rent-btn" data-action="set-landlord" data-name="${esc(r.name)}">This is my rent</button>` : ""}
       ${r.status === "paid" ? `<span class="pill good">Paid ${esc(dayShort(mks[2], +r.paid.date.slice(8)))}</span>` : r.status === "upcoming" ? `<span class="pill neutral">Due ~${esc(dayShort(mks[2], r.day))}</span>` : `<span class="pill warn">Not seen yet</span>`}</div>`).join("")}</div>
       ${toCome ? `<p class="muted" style="margin:12px 0 0;font-size:.86rem">About <strong>${esc(money(toCome))}</strong> in regular payments hasn't left your account yet this month.</p>` : ""}`
     : `<p class="muted" style="margin:0">Payments that show up once a month for about the same amount (rent, EMIs, subscriptions, your maid's salary) appear here once both earlier months are imported.</p>`;
@@ -1444,9 +1482,10 @@ function viewBudget() {
   return `<div class="grid">
     <section class="card span-12"><div class="card-h"><h2>Your monthly plan</h2><span class="sub">${esc(where)}</span></div><div id="planSummary">${planSummaryHTML()}</div></section>
     <section class="card span-12"><div class="card-h"><h2>Income & goal</h2><span class="sub">All amounts in rupees</span></div>
-      <div class="settings-row two-col">
+      <div class="settings-row">
         <label class="field">Monthly take-home salary / income${mi("setIncome", 'data-setting="income"', s.income, "Monthly income")}</label>
         <label class="field">Savings goal per month (including SIPs)${mi("setGoal", 'data-setting="savingsGoal"', s.savingsGoal, "Savings goal")}</label>
+        <label class="field">Who do you pay rent to?<input class="in" id="setLandlord" value="${esc((s.landlords || []).join(", "))}" placeholder="e.g. Shiwani Singh" autocomplete="off"><span class="hint">Their name as it shows in UPI. Payments to them are filed as rent.</span></label>
       </div></section>
     <section class="card span-12"><div class="card-h"><h2>Categories & budgets</h2><span class="sub">Keywords decide where new payments land. Runway also learns from every category you pick.</span></div>
       <div class="cat-edit cat-edit-h"><span>Category</span><span>Budget / month</span><span>Type</span><span>Matching keywords</span><span></span></div>
@@ -1638,6 +1677,7 @@ function updateSuggest() {
   if (ed.catTouched) { hint.className = "hint"; hint.textContent = "Chosen by you. Runway will remember it for this merchant."; }
   else if (s.why === "learned") { hint.className = "hint auto"; hint.textContent = `Auto: you filed "${s.kw}" here before`; }
   else if (s.why === "keyword") { hint.className = "hint auto"; hint.textContent = `Auto: matched "${s.kw}"`; }
+  else if (s.why === "landlord") { hint.className = "hint auto"; hint.textContent = `Auto: rent to ${s.kw}`; }
   else { hint.className = "hint"; hint.textContent = "No match yet. Pick a category and Runway will learn it."; }
 }
 function openTx(mk, id) {
@@ -1706,6 +1746,7 @@ function openSetup(fromAdd) {
       <label class="field">Monthly take-home salary / income<input class="in num" id="suIncome" inputmode="decimal" placeholder="e.g. 85000"></label>
       <label class="field">Savings goal per month (including SIPs)<input class="in num" id="suGoal" inputmode="decimal" placeholder="e.g. 20000"></label>
     </div>
+    <label class="field">Who do you pay rent to? <span class="hint">(optional)</span><input class="in" id="suLandlord" placeholder="Landlord's name as it shows in UPI, e.g. Shiwani Singh" autocomplete="off"></label>
     <div><div class="eyebrow" style="margin-bottom:8px">Monthly budget per category in ₹ (starting suggestions, edit freely)</div>
     <div class="setup-cats">${base.categories.map(c => `<label><span>${esc(c.name)}${c.kind !== "everyday" ? ` <span class="muted">· ${c.kind === "fixed" ? "fixed" : "saving"}</span>` : ""}</span><input class="in num" id="su-${esc(c.id)}" data-cat="${esc(c.id)}" inputmode="decimal" value="${c.budget || ""}" placeholder="0"></label>`).join("")}</div></div>
     <div class="dlg-f"><span class="hint left" id="suTotal"></span><button type="button" class="btn ghost" data-close>Cancel</button><button type="submit" class="btn primary">Start budgeting</button></div>`;
@@ -1717,7 +1758,7 @@ function openSetup(fromAdd) {
   f.oninput = upd; upd();
   f.onsubmit = e => {
     e.preventDefault();
-    const s = normalizeSettings({ income: parseAmt($("#suIncome").value) || 0, savingsGoal: parseAmt($("#suGoal").value) || 0, categories: base.categories.map(c => ({ ...c, budget: Math.max(0, parseAmt(f.querySelector(`#su-${CSS.escape(c.id)}`).value) || 0) })), rules: S.demo ? {} : S.settings.rules });
+    const s = normalizeSettings({ landlords: $("#suLandlord").value.split(",").map(x => x.trim()).filter(x => x.length >= 3), ownName: S.demo ? "" : S.settings.ownName, income: parseAmt($("#suIncome").value) || 0, savingsGoal: parseAmt($("#suGoal").value) || 0, categories: base.categories.map(c => ({ ...c, budget: Math.max(0, parseAmt(f.querySelector(`#su-${CSS.escape(c.id)}`).value) || 0) })), rules: S.demo ? {} : S.settings.rules });
     const wasDemo = S.demo;
     S.settings = s; kwIndex = null;
     if (wasDemo) { S.months = {}; S.demo = false; S.year = null; }
@@ -1774,9 +1815,111 @@ function loadXLSX() {
   }));
 }
 const cellText = c => c instanceof Date ? (t => `${t.getUTCFullYear()}-${pad(t.getUTCMonth() + 1)}-${pad(t.getUTCDate())}`)(new Date(c.getTime() + 432e5)) : String(c ?? "");
-async function readStatementFile(file) {
+// PDF statements: read the text with pdf.js, rebuild the table rows from where each piece of text sits on the page
+let pdfLoading = null;
+function loadPDFJS() {
+  if (window.pdfjsLib) return Promise.resolve();
+  return pdfLoading || (pdfLoading = new Promise((res, rej) => {
+    const s = document.createElement("script"); s.src = "vendor/pdf.min.js";
+    s.onload = () => { window.pdfjsLib.GlobalWorkerOptions.workerSrc = "vendor/pdf.worker.min.js"; res(); };
+    s.onerror = () => { pdfLoading = null; rej(new Error("pdfjs")); };
+    document.head.appendChild(s);
+  }));
+}
+const AMT_RE = /^-?[\d,]+\.\d{1,2}(\s*(cr|dr))?$/i;
+const DATE_RE = /^\d{1,2}[-/.\s](\d{1,2}|[A-Za-z]{3,9})[-/.\s]\d{2,4}$/;
+const SKIP_RE = /opening balance|closing balance|transaction total|^total\b|brought forward|carried forward|page \d+ of/i;
+const HEAD_DESC = /(particular|narration|description|details|remarks)/i;
+const isHeadLine = l => /date/i.test(l.text) && HEAD_DESC.test(l.text) && /(debit|withdraw|credit|deposit|amount)/i.test(l.text);
+async function readPDFLines(buf, password) {
+  await loadPDFJS();
+  let doc;
+  try { doc = await window.pdfjsLib.getDocument({ data: buf, password: password || undefined, isEvalSupported: false }).promise; }
+  catch (e) { if (e && e.name === "PasswordException") { const err = new Error("pdf-password"); err.wrong = e.code === 2; throw err; } throw new Error("pdf-read"); }
+  const pages = [];
+  for (let p = 1; p <= doc.numPages; p++) {
+    const tc = await (await doc.getPage(p)).getTextContent();
+    const items = tc.items.filter(i => i.str && i.str.trim()).map(i => ({ s: i.str.trim(), x: i.transform[4], y: i.transform[5], w: i.width }));
+    items.sort((a, b) => b.y - a.y || a.x - b.x);
+    const lines = [];
+    for (const it of items) { let l = lines.find(L => Math.abs(L.y - it.y) < 2.5); if (!l) lines.push(l = { y: it.y, items: [] }); l.items.push(it); }
+    lines.forEach(l => { l.items.sort((a, b) => a.x - b.x); l.text = l.items.map(i => i.s).join(" "); });
+    pages.push(lines.sort((a, b) => b.y - a.y));
+  }
+  return pages;
+}
+function pdfHolderName(pages) {
+  for (const l of (pages[0] || []).slice(0, 8)) {
+    const t = l.items[0] ? l.items[0].s.replace(/^(mr|mrs|ms|miss|dr)\.?\s+/i, "") : "";
+    if (/^[A-Za-z][A-Za-z.]*(\s+[A-Za-z][A-Za-z.]*){1,3}$/.test(t) && !/bank|statement|account|branch|customer|page|limited|ltd/i.test(t)) return t;
+  }
+  return "";
+}
+function pdfToRows(pages) {
+  let head = null;
+  for (const lines of pages) { head = lines.find(isHeadLine); if (head) break; }
+  if (!head) throw new Error("pdf-layout");
+  const cells = [];
+  for (const it of head.items) { const c = cells[cells.length - 1]; if (c && it.x - c.x1 < 6) { c.name += " " + it.s; c.x1 = it.x + it.w; } else cells.push({ name: it.s, x0: it.x, x1: it.x + it.w }); }
+  cells.forEach(c => { c.cx = (c.x0 + c.x1) / 2; c.kind = /date|\bdt\b/i.test(c.name) ? "date" : /(debit|withdraw|credit|deposit|amount|balance)/i.test(c.name) ? "amt" : HEAD_DESC.test(c.name) ? "desc" : "other"; });
+  const dateCol = cells.findIndex(c => c.kind === "date"), descCol = cells.findIndex(c => c.kind === "desc");
+  if (dateCol < 0 || descCol < 0) throw new Error("pdf-layout");
+  const nearest = (x, kinds) => { let best = -1, bd = Infinity; cells.forEach((c, i) => { if (kinds && !kinds.includes(c.kind)) return; const d = Math.abs(c.cx - x); if (d < bd) { bd = d; best = i; } }); return best; };
+  // the description column's left edge, learned from the data (it often starts left of its heading)
+  const xs = {};
+  for (const lines of pages) for (const l of lines) for (const it of l.items) if (it.s.length >= 12 && !AMT_RE.test(it.s) && !DATE_RE.test(it.s)) { const k = Math.round(it.x); xs[k] = (xs[k] || 0) + 1; }
+  const descX = +(Object.entries(xs).sort((a, b) => b[1] - a[1])[0] || [cells[descCol].x0])[0];
+  const isAnchor = l => l.items.some(it => DATE_RE.test(it.s) && nearest(it.x + it.w / 2) === dateCol);
+  const rows = [cells.map(c => c.name)];
+  // pass 1: per page, the date lines (one per transaction) and everything else
+  const pagesInfo = [];
+  let votes = 0;
+  for (const lines of pages) {
+    const body = lines.filter(l => !isHeadLine(l));
+    const anchors = body.filter(isAnchor);
+    if (!anchors.length) continue;
+    const others = body.filter(l => !anchors.includes(l) && !SKIP_RE.test(l.text));
+    const gaps = []; for (let i = 1; i < body.length; i++) gaps.push(body[i - 1].y - body[i].y);
+    gaps.sort((a, b) => a - b);
+    const reach = Math.max((gaps[Math.floor(gaps.length / 2)] || 10) * 3, 20);
+    const near = l => ({ above: anchors.filter(a => a.y > l.y).pop(), below: anchors.find(a => a.y < l.y) });
+    // is the date on a row's last line (text above it) or its first line (text below)? only lines between two rows get a say
+    for (const l of others) { const { above, below } = near(l); if (!above || !below) continue; const dA = above.y - l.y, dB = l.y - below.y; if (dA !== dB) votes += dB < dA ? 1 : -1; }
+    pagesInfo.push({ anchors, others, reach, near });
+  }
+  // pass 2: attach each text line to its transaction, with one layout decision for the whole statement
+  for (const { anchors, others, reach, near } of pagesInfo) {
+    const groups = new Map(anchors.map(a => [a, [a]]));
+    for (const l of others) {
+      const { above, below } = near(l), target = votes >= 0 ? below : above;
+      if (target && Math.abs(target.y - l.y) <= reach) groups.get(target).push(l);
+    }
+    for (const [a, ls] of groups) {
+      if (SKIP_RE.test(a.text)) continue;
+      const out = cells.map(() => []);
+      for (const l of ls.sort((p, q) => q.y - p.y)) for (const it of l.items) {
+        const cx = it.x + it.w / 2;
+        let col;
+        if (DATE_RE.test(it.s) && cells[nearest(cx)].kind === "date") col = nearest(cx, ["date"]);
+        else if (AMT_RE.test(it.s)) col = nearest(cx, ["amt"]);
+        else if (Math.abs(it.x - descX) < 6 || /\s/.test(it.s)) col = descCol;
+        else col = nearest(cx, ["other", "desc", "date"]);
+        if (col >= 0) out[col].push(it.s);
+      }
+      rows.push(out.map(v => v.join(" ").replace(/\s+/g, " ").trim()));
+    }
+  }
+  if (rows.length < 2) throw new Error("pdf-layout");
+  return rows;
+}
+
+async function readStatementFile(file, password) {
   const name = (file.name || "").toLowerCase();
-  if (/\.pdf$/.test(name) || file.type === "application/pdf") throw new Error("pdf");
+  if (/\.pdf$/.test(name) || file.type === "application/pdf") {
+    const pages = await readPDFLines(await file.arrayBuffer(), password);
+    imp.holder = pdfHolderName(pages);
+    return pdfToRows(pages);
+  }
   if (/\.(xlsx|xls|xlsm|ods)$/.test(name)) {
     await loadXLSX();
     const wb = window.XLSX.read(await file.arrayBuffer(), { type: "array", cellDates: true });
@@ -1822,17 +1965,31 @@ function renderImportPick() {
   const li = lastImport();
   $("#importBody").innerHTML = `<div class="dlg-h"><h2>Import your bank statement</h2><button class="btn ghost sm" data-close>Close</button></div>
     ${li ? `<div class="callout" style="margin:0"><p>Your last import covered up to <strong>${esc(dateLong(li.to))}</strong>. Upload a newer statement, even one that overlaps, and Runway adds only what's new.</p></div>` : ""}
-    <p class="muted" style="margin:0">In net banking or your bank's app (HDFC, SBI, ICICI, Axis, Kotak and others), open the account statement, pick the dates, and download it as <strong>Excel or CSV</strong>. Runway reads UPI narrations, sorts each payment into a category, and lets you check them before anything is saved.</p>
-    <div class="drop"><input type="file" id="csvFile" accept=".csv,.xls,.xlsx,.txt,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
-      <span class="muted">PDF statements can't be read. Choose Excel or CSV when you download.</span>
+    <p class="muted" style="margin:0">In net banking or your bank's app (HDFC, SBI, ICICI, Axis, Kotak and others), open the account statement, pick the dates, and download it as <strong>PDF, Excel or CSV</strong>. Runway reads UPI narrations, sorts each payment into a category, and lets you check them before anything is saved.</p>
+    <div class="drop"><input type="file" id="csvFile" accept=".pdf,.csv,.xls,.xlsx,.txt,application/pdf,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+      <span class="muted">Everything is read on this device. Your statement is never uploaded.</span>
       <details style="width:100%"><summary class="muted" style="cursor:pointer">Or paste CSV text</summary><textarea class="in" id="csvPaste" rows="4" style="margin-top:8px" placeholder="Date,Narration,Withdrawal Amt.,Deposit Amt.&#10;01/10/26,UPI-SWIGGY LIMITED-swiggy@axisbank-...,386.00,"></textarea><button class="btn" id="csvPasteGo" style="margin-top:8px">Use pasted text</button></details>
     </div>`;
-  $("#csvFile").onchange = async e => {
-    const file = e.target.files[0]; if (!file) return;
-    try { loadImportRows(await readStatementFile(file), file.name); }
-    catch (err) { toast(err && err.message === "pdf" ? "PDF statements can't be read. Download the statement as Excel or CSV instead." : err && err.message === "xlsx" ? "Excel support didn't load. Connect to the internet once, or save the statement as CSV." : "Runway couldn't read that file. Try the CSV version of your statement."); }
-  };
+  $("#csvFile").onchange = e => { const file = e.target.files[0]; if (file) openStatement(file); };
   $("#csvPasteGo").onclick = () => loadImportRows(parseCSV($("#csvPaste").value || ""), "pasted text");
+}
+async function openStatement(file, password) {
+  imp.holder = "";
+  try { loadImportRows(await readStatementFile(file, password), file.name); }
+  catch (err) {
+    const m = err && err.message;
+    if (m === "pdf-password") { renderPdfPassword(file, err.wrong); return; }
+    toast(m === "pdf-layout" ? "Runway couldn't find a transactions table in that PDF. Try the Excel or CSV version of your statement." : m === "pdfjs" || m === "xlsx" ? "The file reader didn't load. Connect to the internet once so Runway can save it for offline use." : "Runway couldn't read that file. Try the Excel or CSV version of your statement.");
+  }
+}
+function renderPdfPassword(file, wrong) {
+  $("#importBody").innerHTML = `<div class="dlg-h"><h2>This statement is locked</h2><button class="btn ghost sm" data-close>Close</button></div>
+    <p class="muted" style="margin:0">Banks often protect emailed statements with a password, usually printed in the email (for example part of your name and date of birth, or your customer ID). It's only used on this device to open the file.</p>
+    <form id="pdfPwForm" style="display:grid;gap:10px"><label class="field">Statement password<input class="in" id="pdfPw" type="password" autocomplete="off" required></label>${wrong ? `<span class="hint" style="color:var(--bad-ink)">That password didn't open it. Check the email from your bank and try again.</span>` : ""}
+    <div class="dlg-f"><button type="button" class="btn ghost left" id="pdfBack">Choose another file</button><button class="btn primary">Open statement</button></div></form>`;
+  $("#pdfPw").focus();
+  $("#pdfBack").onclick = renderImportPick;
+  $("#pdfPwForm").onsubmit = e => { e.preventDefault(); openStatement(file, $("#pdfPw").value); };
 }
 function loadImportRows(rows, fileName) {
   if (!rows || rows.length < 2) { toast("That file has no rows Runway can read. Check it's a statement export."); return; }
@@ -1858,14 +2015,25 @@ function analyzeImport() {
     const type = v < 0 ? "expense" : "income", amount = Math.round(Math.abs(v) * 100) / 100;
     if (type === "income" && !imp.income) return;
     const s = type === "expense" ? suggest(desc) : { cat: "", why: "income" };
-    out.push({ i, date, desc, amount, type, ref: m.ref >= 0 ? validRef(r[m.ref]) : "", fp: fpOf(date, type, amount, desc), cat: s.cat, why: s.why, kw: s.kw, status: "new", include: true, userSet: false });
+    const rrn = (desc.match(/(?:^|[\/\s-])(\d{12})(?=[\/\s-]|$)/) || [])[1] || "";
+    out.push({ i, date, desc, amount, type, ref: (m.ref >= 0 ? validRef(r[m.ref]) : "") || rrn, fp: fpOf(date, type, amount, desc), cat: s.cat, why: s.why, kw: s.kw, status: "new", include: true, userSet: false });
   });
+  // a failed payment the bank refunded: the credit carries the same UPI reference and amount as the debit
+  for (const c of out) if (c.type === "income" && c.ref && c.status === "new") {
+    const d = out.find(x => x.type === "expense" && x.status === "new" && x.ref === c.ref && Math.abs(x.amount - c.amount) < 0.01);
+    if (d) { c.status = d.status = "reversed"; c.include = d.include = false; }
+  }
+  // money moved between your own accounts is neither income nor spending
+  const own = [...new Set([S.settings.ownName, imp.holder].filter(Boolean))];
+  if (own.length) for (const c of out) if (c.status === "new" && own.some(n => nameMatches(n, c.desc))) { c.status = "self"; c.include = false; }
   // 1) rows already imported before: count-based, so two genuine identical payments still both count
   const all = Object.values(S.months).flat();
   const fpHave = {}, refHave = {};
-  for (const t of all) { const k = t.fp || fpOfTx(t); fpHave[k] = (fpHave[k] || 0) + 1; if (t.ref) refHave[t.ref] = (refHave[t.ref] || 0) + 1; }
+  for (const t of all) { const k = t.fp || fpOfTx(t); fpHave[k] = (fpHave[k] || 0) + 1; if (t.ref) { const rk = t.type + ":" + t.ref; refHave[rk] = (refHave[rk] || 0) + 1; } }
   for (const c of out) {
-    if (c.ref && refHave[c.ref] > 0) { refHave[c.ref]--; if (fpHave[c.fp] > 0) fpHave[c.fp]--; c.status = "known"; }
+    if (c.status !== "new") continue;
+    const rk = c.type + ":" + c.ref;
+    if (c.ref && refHave[rk] > 0) { refHave[rk]--; if (fpHave[c.fp] > 0) fpHave[c.fp]--; c.status = "known"; }
     else if (fpHave[c.fp] > 0) { fpHave[c.fp]--; c.status = "known"; }
   }
   // 2) payments you typed in by hand: same amount, within 3 days, not yet linked to a bank row
@@ -1878,12 +2046,12 @@ function analyzeImport() {
   }
   imp.cands = out;
 }
-const impNew = () => imp.cands.filter(c => c.status === "new" || (c.status === "manual" && c.include));
+const impNew = () => imp.cands.filter(c => c.status === "new" || ((c.status === "manual" || c.status === "self") && c.include));
 const impNeeds = () => impNew().filter(c => c.type === "expense" && c.cat === "other" && !c.userSet);
 const rangeText = list => { if (!list.length) return ""; const ds = list.map(c => c.date).sort(); return ds[0] === ds[ds.length - 1] ? dateLong(ds[0]) : `${dateLong(ds[0])} – ${dateLong(ds[ds.length - 1])}`; };
 function renderImportMap() {
   const m = imp.map, opts = sel => imp.head.map((h, i) => `<option value="${i}"${i === sel ? " selected" : ""}>${esc(h)}</option>`).join("");
-  const c = imp.cands, known = c.filter(x => x.status === "known"), manual = c.filter(x => x.status === "manual"), fresh = impNew();
+  const c = imp.cands, known = c.filter(x => x.status === "known"), manual = c.filter(x => x.status === "manual"), selfs = c.filter(x => x.status === "self"), reversed = c.filter(x => x.status === "reversed"), fresh = impNew();
   const ok = c.length > 0;
   $("#importBody").innerHTML = `<div class="dlg-h"><h2>${ok ? "What's in this statement" : "Check the columns"}</h2><button class="btn ghost sm" data-close>Close</button></div>
     ${ok ? `<div class="imp-sum">
@@ -1894,6 +2062,9 @@ function renderImportMap() {
     <div class="imp-months">${[...new Set(c.map(x => mkOf(x.date)))].sort().map(mk => { const inM = c.filter(x => mkOf(x.date) === mk), nNew = inM.filter(x => fresh.includes(x)).length, nKnown = inM.filter(x => x.status === "known").length; return `<div><b>${esc(monthLong(mk))}${mk === curMK() ? " so far" : ""}</b><span>${nNew ? `${nNew} new` : "nothing new"}${nKnown ? ` · ${nKnown} already in` : ""}</span></div>`; }).join("")}</div>` : `<p class="muted" style="margin:0">Runway couldn't find transactions with these columns. Pick the right ones below.</p>`}
     ${manual.length ? `<div class="matches"><p style="margin:0 0 6px"><strong>${manual.length}</strong> ${manual.length === 1 ? "payment looks like one" : "payments look like ones"} you already added by hand. They'll be linked instead of added twice. Tick any that are actually different.</p>
       ${manual.map((x, k) => `<label class="switch"><input type="checkbox" data-match="${k}"${x.include ? " checked" : ""}> ${esc(dateNice(x.date))} · ${esc(prettyMerchant(x.desc))} · ${esc(money(x.amount, { cents: true }))} <span class="muted">matches "${esc(prettyMerchant(x.manualDesc))}"</span></label>`).join("")}</div>` : ""}
+    ${selfs.length ? `<div class="matches"><p style="margin:0 0 6px"><strong>${selfs.length}</strong> ${selfs.length === 1 ? "transfer looks like it's" : "transfers look like they're"} between your own accounts${imp.holder || S.settings.ownName ? ` (${esc(imp.holder || S.settings.ownName)})` : ""}, so ${selfs.length === 1 ? "it's" : "they're"} left out of income and spending. Tick any that should count.</p>
+      ${selfs.map((x, k) => `<label class="switch"><input type="checkbox" data-self="${k}"${x.include ? " checked" : ""}> ${esc(dateNice(x.date))} · ${esc(prettyMerchant(x.desc))} · ${x.type === "income" ? "+" : "−"}${esc(money(x.amount, { cents: true }))}</label>`).join("")}</div>` : ""}
+    ${reversed.length ? `<p class="muted" style="margin:0;font-size:.86rem">Left out ${reversed.length / 2} failed ${reversed.length === 2 ? "payment" : "payments"} that the bank refunded: ${[...new Set(reversed.filter(x => x.type === "expense").map(x => `${prettyMerchant(x.desc)} ${money(x.amount, { cents: true })}`))].map(esc).join(", ")}.</p>` : ""}
     <details class="cols"${ok ? "" : " open"}><summary>Columns: ${esc(imp.head[m.date] || "?")} · ${esc(imp.head[m.desc] || "?")} · ${esc(m.mode === "split" ? `${imp.head[m.debit] || "?"} / ${imp.head[m.credit] || "?"}` : imp.head[m.amount] || "?")}${m.ref >= 0 ? " · " + esc(imp.head[m.ref]) : ""}</summary>
       <div class="settings-row" style="margin-top:12px">
         <label class="field">Date column<select class="in" id="imDate">${opts(m.date)}</select></label>
@@ -1918,36 +2089,53 @@ function renderImportMap() {
   };
   $("#importBody").querySelectorAll(".cols select, .cols input[type=checkbox]").forEach(el => el.onchange = re);
   $("#importBody").querySelectorAll("[data-match]").forEach(el => el.onchange = () => { manual[+el.dataset.match].include = el.checked; renderImportMap(); });
+  $("#importBody").querySelectorAll("[data-self]").forEach(el => el.onchange = () => { selfs[+el.dataset.self].include = el.checked; renderImportMap(); });
   $("#imBack").onclick = renderImportPick;
   if ($("#imNext")) $("#imNext").onclick = () => { imp.view = impNeeds().length ? "needs" : "all"; renderImportReview(); };
 }
 function impRow(c) {
   const k = imp.cands.indexOf(c), inc = c.type === "income";
-  const badge = inc ? `<span class="chip">Income</span>` : c.userSet ? `<span class="tag">you picked</span>` : c.why === "learned" ? `<span class="tag">learned</span>` : c.why === "keyword" ? `<span class="tag">auto</span>` : `<span class="tag warn">no match</span>`;
+  const badge = inc ? `<span class="chip">Income</span>` : c.userSet ? `<span class="tag">you picked</span>` : c.why === "landlord" ? `<span class="tag">rent</span>` : c.why === "learned" ? `<span class="tag">learned</span>` : c.why === "keyword" ? `<span class="tag">auto</span>` : `<span class="tag warn">no match</span>`;
   return `<div class="tx imp-row" data-k="${k}">
     <div class="tx-main" style="cursor:default"><span class="tx-desc">${esc(prettyMerchant(c.desc))}</span><span class="tx-meta">${esc(dateNice(c.date))} · ${esc(c.desc)}</span></div>
     ${inc ? badge : `<span class="imp-cat">${badge}<select class="catpick${c.cat === "other" && !c.userSet ? " unsorted" : ""}" id="ir-${k}" data-imp="${k}" aria-label="Category for ${esc(prettyMerchant(c.desc))}">${catOptions(c.cat)}</select></span>`}
     <span class="tx-amt ${inc ? "pos" : ""}">${inc ? "+" : ""}${esc(money(c.amount, { cents: true }))}</span></div>`;
 }
+// "Needs a category" shows one row per shop or person, so a single pick covers all their payments
+function impGroups(list) {
+  const by = new Map();
+  for (const c of list) { const k = merchantKey(c.desc) || normDesc(c.desc); if (!by.has(k)) by.set(k, { key: k, items: [] }); by.get(k).items.push(c); }
+  return [...by.values()].sort((a, b) => b.items.length - a.items.length || sum(b.items.map(x => x.amount)) - sum(a.items.map(x => x.amount)));
+}
+function impGroupRow(g, gi) {
+  const c = g.items[0], n = g.items.length, total = sum(g.items.map(x => x.amount)), picked = g.items.some(x => x.userSet);
+  const ds = g.items.map(x => x.date).sort();
+  return `<div class="tx imp-row">
+    <div class="tx-main" style="cursor:default"><span class="tx-desc">${esc(prettyMerchant(c.desc))}</span><span class="tx-meta">${n} ${n === 1 ? "payment" : "payments"} · ${esc(n === 1 ? dateNice(ds[0]) : `${dateLong(ds[0])} – ${dateLong(ds[ds.length - 1])}`)}</span></div>
+    <span class="imp-cat">${picked ? `<span class="tag">you picked</span>` : `<span class="tag warn">no match</span>`}<select class="catpick${picked ? "" : " unsorted"}" id="ig-${gi}" data-grp="${gi}" aria-label="Category for ${esc(prettyMerchant(c.desc))}">${catOptions(c.cat)}</select></span>
+    <span class="tx-amt">${esc(money(total, { cents: true }))}</span></div>`;
+}
 function renderImportReview() {
   const fresh = impNew(), needs = impNeeds();
   const list = imp.view === "needs" ? fresh.filter(c => c.type === "expense" && (c.cat === "other" || c.userSet) && (c.why === "none" || c.userSet)) : fresh;
+  imp.groups = imp.view === "needs" ? impGroups(list) : null;
   $("#importBody").innerHTML = `<div class="dlg-h"><h2>Check categories</h2><button class="btn ghost sm" data-close>Close</button></div>
     <div class="imp-tabs" role="group" aria-label="Which rows to show">
       <button type="button" data-view="needs" aria-pressed="${imp.view === "needs"}">Needs a category <b id="needsN">${needs.length}</b></button>
       <button type="button" data-view="all" aria-pressed="${imp.view === "all"}">All new <b>${fresh.length}</b></button>
     </div>
-    <p class="muted" style="margin:0;font-size:.88rem">${imp.view === "needs" ? (list.length ? "These didn't match any category. Pick one and every payment to the same shop or person follows, now and in future imports." : "Everything was sorted automatically. Switch to All new to double-check them.") : "Every new row with the category Runway picked. Change any that look wrong; Runway learns from it."}</p>
-    <div class="imp-list" id="impList">${list.map(impRow).join("") || `<div class="empty" style="padding:20px"><p style="margin:0">Nothing to check here.</p></div>`}</div>
+    <p class="muted" style="margin:0;font-size:.88rem">${imp.view === "needs" ? (list.length ? `${imp.groups.length} ${imp.groups.length === 1 ? "shop or person" : "shops and people"} didn't match a category. Pick one for each and all their payments follow, now and in future imports. Anything you leave stays in Other.` : "Everything was sorted automatically. Switch to All new to double-check them.") : "Every new row with the category Runway picked. Change any that look wrong; Runway learns from it."}</p>
+    <div class="imp-list" id="impList">${(imp.groups ? imp.groups.map(impGroupRow) : list.map(impRow)).join("") || `<div class="empty" style="padding:20px"><p style="margin:0">Nothing to check here.</p></div>`}</div>
     <div class="dlg-f"><button class="btn ghost left" id="imBack2">Back</button><button class="btn primary" id="imGo">Add ${fresh.length} ${fresh.length === 1 ? "transaction" : "transactions"}</button></div>`;
   $("#importBody").querySelectorAll("[data-view]").forEach(b => b.onclick = () => { imp.view = b.dataset.view; renderImportReview(); });
   $("#imBack2").onclick = renderImportMap;
   $("#imGo").onclick = commitImport;
   $("#impList").addEventListener("change", e => {
-    const sel = e.target.closest("[data-imp]"); if (!sel) return;
-    const c = imp.cands[+sel.dataset.imp]; c.cat = sel.value; c.userSet = true; sel.classList.remove("unsorted");
+    const sel = e.target.closest("[data-imp], [data-grp]"); if (!sel) return;
+    if (sel.dataset.grp !== undefined) { for (const x of imp.groups[+sel.dataset.grp].items) { x.cat = sel.value; x.userSet = true; } }
+    const c = sel.dataset.grp !== undefined ? imp.groups[+sel.dataset.grp].items[0] : imp.cands[+sel.dataset.imp]; c.cat = sel.value; c.userSet = true; sel.classList.remove("unsorted");
     const key = merchantKey(c.desc); let follow = 0;
-    if (key) for (const o of impNew()) if (o !== c && !o.userSet && o.type === "expense" && merchantKey(o.desc) === key) { o.cat = c.cat; o.why = "learned"; follow++; const s2 = document.getElementById("ir-" + imp.cands.indexOf(o)); if (s2) { s2.value = c.cat; s2.classList.remove("unsorted"); } }
+    if (key && sel.dataset.grp === undefined) for (const o of impNew()) if (o !== c && !o.userSet && o.type === "expense" && merchantKey(o.desc) === key) { o.cat = c.cat; o.why = "learned"; follow++; const s2 = document.getElementById("ir-" + imp.cands.indexOf(o)); if (s2) { s2.value = c.cat; s2.classList.remove("unsorted"); } }
     const tag = sel.parentElement.querySelector(".tag"); if (tag) { tag.className = "tag"; tag.textContent = "you picked"; }
     $("#needsN").textContent = impNeeds().length;
     if (follow) toast(`${follow} more "${prettyMerchant(c.desc)}" ${follow === 1 ? "payment" : "payments"} moved to ${catName(c.cat)} too.`);
@@ -1969,6 +2157,7 @@ function commitImport() {
   const all = imp.cands, ds = all.map(c => c.date).sort();
   const rec = { at: todayISO(), file: imp.fileName.slice(0, 80), from: ds[0], to: ds[ds.length - 1], added: fresh.length, skipped: all.filter(c => c.status === "known").length, linked };
   S.settings.imports = [rec, ...(S.settings.imports || [])].slice(0, 24);
+  if (imp.holder && !S.settings.ownName) S.settings.ownName = imp.holder;
   persist();
   $("#importDialog").close();
   const latest = fresh.map(c => mkOf(c.date)).sort().pop();
@@ -2007,6 +2196,7 @@ document.addEventListener("click", e => {
   else if (act === "setup") openSetup(false);
   else if (act === "backup-now") backupNow();
   else if (act === "budgets-from-3m") budgetsFrom3m(a);
+  else if (act === "set-landlord") { const n = a.dataset.name; S.settings.landlords = [...new Set([...(S.settings.landlords || []), n])].slice(0, 5); persist(); applyLandlords(); render(); }
   else if (act === "db-import") $("#dbFile").click();
   else if (act === "db-merge") dbMerge();
   else if (act === "db-replace") dbReplace(a);
@@ -2038,6 +2228,7 @@ document.addEventListener("change", e => {
   if (t.id === "dbFile") { if (t.files[0]) openDbImport(t.files[0]); t.value = ""; return; }
   if (t.classList.contains("catpick")) { recategorize(t.dataset.mk, t.dataset.id, t.value); return; }
   if (t.id === "txCat") { S.txCat = t.value; $("#txList").innerHTML = txListHTML(); return; }
+  if (t.id === "setLandlord") { S.settings.landlords = t.value.split(",").map(x => x.trim()).filter(x => x.length >= 3).slice(0, 5); persist(); applyLandlords(); render(); return; }
   if (t.dataset.setting) { S.settings[t.dataset.setting] = Math.max(0, parseAmt(t.value) || 0); persist("settings"); $("#planSummary").innerHTML = planSummaryHTML(); return; }
   if (t.dataset.cat && t.dataset.field) {
     const c = catById(t.dataset.cat); if (!c) return; const f = t.dataset.field;
