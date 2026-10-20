@@ -1,6 +1,6 @@
 // Offline support: everything the app needs is cached on first visit, so it opens and works with no connection.
 // Pages are network-first (so updates arrive when online) and fall back to the cache offline.
-const CACHE = "runway-v3";
+const CACHE = "runway-v4";
 const SHELL = [
   "./", "./index.html", "./manifest.webmanifest",
   "./icons/icon-192.png", "./icons/icon-512.png", "./icons/apple-touch-icon.png",
