@@ -22,10 +22,36 @@ img{max-width:100%}
 [hidden]{display:none!important}
 .callout-card{display:flex;gap:12px 20px;align-items:center;flex-wrap:wrap;background:var(--accent-wash);border-color:transparent;box-shadow:none;padding:14px 18px}
 .callout-card p{margin:0;flex:1 1 320px}
+.kvs{display:grid}
+.kv{display:grid;grid-template-columns:150px minmax(0,1fr) auto;gap:2px 16px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.kv:last-child{border-bottom:0}
+.kv > span:first-child{font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;grid-row:span 2}
+.kv b{font-weight:600;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.kv .muted{font-size:.84rem;grid-column:2}
+.kv .btn{grid-column:3;grid-row:1 / span 2}
+@media (max-width:640px){.kv{grid-template-columns:minmax(0,1fr)}.kv > span:first-child{grid-row:auto}.kv .muted{grid-column:1}.kv .btn{grid-column:1;grid-row:auto;justify-self:start;margin-top:6px}}
+.imp-sum{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.imp-sum div{border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:grid;gap:2px;min-width:0}
+.imp-sum div.hi{border-color:var(--accent);background:var(--accent-wash)}
+.imp-sum span{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.imp-sum b{font-family:var(--f-display);font-size:1.5rem;font-weight:650}
+.imp-sum i{font-style:normal;font-size:.8rem;color:var(--ink-2)}
+@media (max-width:520px){.imp-sum{grid-template-columns:1fr}}
+.matches{display:grid;gap:6px;padding:12px 14px;border-radius:12px;background:var(--warn-wash);font-size:.88rem}
+.matches .switch{white-space:normal;align-items:flex-start;color:var(--ink)}
+.cols{border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.cols summary{cursor:pointer;font-size:.85rem;color:var(--ink-2);font-weight:600}
+.imp-tabs{display:inline-flex;background:var(--surface-2);border-radius:10px;padding:3px;gap:2px;justify-self:start}
+.imp-tabs button{border:0;background:none;padding:7px 12px;border-radius:8px;font-weight:600;color:var(--ink-2);cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+.imp-tabs button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.imp-tabs b{font-variant-numeric:tabular-nums;font-size:.8rem;background:var(--surface-2);border-radius:999px;padding:0 7px}
+.imp-list{max-height:min(52vh,460px);overflow:auto;border:1px solid var(--line);border-radius:12px;padding:0 10px}
+.imp-cat{display:inline-flex;gap:6px;align-items:center}
+.tag{font-size:.7rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.tag.warn{color:var(--warn-ink)}
+@media (max-width:560px){.imp-cat{grid-row:2;justify-self:start}}
 </style>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..700&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="fonts/fonts.css">
 <style>
 /* Layout: app shell — sticky header with tabs (bottom tab bar on phones), one scrolling work area of cards in a 12-col grid. */
 :root{
@@ -580,10 +606,14 @@ function normalizeSettings(s) {
     ? s.categories.map(c => ({ id: String(c.id), name: String(c.name || "Untitled"), budget: Math.max(0, +c.budget || 0), kind: KINDS[c.kind] ? c.kind : (c.fixed ? "fixed" : "everyday"), keywords: Array.isArray(c.keywords) ? c.keywords.map(String) : [] }))
     : clone(DEFAULT_CATS);
   if (!cats.some(c => c.id === "other")) cats.push({ id: "other", name: "Other", budget: 0, kind: "everyday", keywords: [] });
-  return { currency: "INR", income: Math.max(0, +s.income || 0), savingsGoal: Math.max(0, +s.savingsGoal || 0), categories: cats, rules: s.rules && typeof s.rules === "object" ? { ...s.rules } : {} };
+  return { currency: "INR", income: Math.max(0, +s.income || 0), savingsGoal: Math.max(0, +s.savingsGoal || 0), categories: cats, rules: s.rules && typeof s.rules === "object" ? { ...s.rules } : {}, imports: Array.isArray(s.imports) ? s.imports.slice(0, 24) : [] };
 }
 function normalizeTx(t) {
-  return { id: String(t.id || newId()), date: String(t.date || todayISO()).slice(0, 10), desc: String(t.desc || ""), amount: Math.abs(+t.amount || 0), type: t.type === "income" ? "income" : "expense", cat: String(t.cat || "other"), auto: t.auto !== false, note: String(t.note || "") };
+  const o = { id: String(t.id || newId()), date: String(t.date || todayISO()).slice(0, 10), desc: String(t.desc || ""), amount: Math.abs(+t.amount || 0), type: t.type === "income" ? "income" : "expense", cat: String(t.cat || "other"), auto: t.auto !== false, note: String(t.note || "") };
+  if (t.src === "bank" || t.src === "manual") o.src = t.src;
+  if (t.fp) o.fp = String(t.fp);
+  if (t.ref) o.ref = String(t.ref);
+  return o;
 }
 
 /* ---------- example data (never saved) ---------- */
@@ -629,27 +659,58 @@ function buildDemo() {
 }
 
 /* ============================================================
-   Storage: this device only (localStorage). Nothing is uploaded.
+   Storage: an on-device database (IndexedDB) plus a second copy in
+   localStorage. Nothing is uploaded. A backup is one JSON "database
+   file" that can be imported on any device to merge or restore.
    ============================================================ */
-const store = { mode: "pending" };
+const store = { mode: "pending", idb: null, persisted: null, fileHandle: null, filePerm: null, fileName: "", lastFileWrite: null, dirty: false };
 const LS_KEY = "runway.data.v2", LS_BACKUP = "runway.lastBackup";
+const canLinkFile = typeof window.showSaveFilePicker === "function";
+const isTouch = () => { try { return matchMedia("(pointer: coarse)").matches; } catch { return false; } };
+
+function idbOpen() {
+  return new Promise((res, rej) => {
+    if (!window.indexedDB) { rej(new Error("no indexedDB")); return; }
+    const r = indexedDB.open("runway", 1);
+    r.onupgradeneeded = () => r.result.createObjectStore("kv");
+    r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+  });
+}
+function idbReq(mode, fn) {
+  return new Promise(res => {
+    try {
+      const tx = store.idb.transaction("kv", mode), q = fn(tx.objectStore("kv"));
+      tx.oncomplete = () => res(mode === "readonly" ? (q.result ?? null) : true);
+      tx.onerror = tx.onabort = () => res(mode === "readonly" ? null : false);
+    } catch { res(mode === "readonly" ? null : false); }
+  });
+}
+const idbGet = k => idbReq("readonly", s => s.get(k));
+const idbPut = (k, v) => idbReq("readwrite", s => s.put(v, k));
+const idbDel = k => idbReq("readwrite", s => s.delete(k));
+
+function snapshot() { return { app: "runway", version: 3, savedAt: new Date().toISOString(), settings: S.settings, months: S.months }; }
+function cleanMonths(raw) { const out = {}; for (const [mk, list] of Object.entries(raw || {})) if (/^\d{4}-\d{2}$/.test(mk) && Array.isArray(list)) out[mk] = list.map(normalizeTx); return out; }
+function applySnapshot(d) { S.settings = normalizeSettings(d.settings); kwIndex = null; S.months = cleanMonths(d.months); S.demo = false; S.year = null; }
 function lsGet() { try { const s = localStorage.getItem(LS_KEY); return s ? JSON.parse(s) : null; } catch { return null; } }
-function lsSet() { try { localStorage.setItem(LS_KEY, JSON.stringify({ settings: S.settings, months: S.months })); return true; } catch { return false; } }
-function loadSaved() {
-  const saved = lsGet();
-  if (!saved || !saved.settings) return false;
-  S.settings = normalizeSettings(saved.settings); kwIndex = null;
-  S.months = {}; for (const [mk, list] of Object.entries(saved.months || {})) S.months[mk] = (list || []).map(normalizeTx);
-  S.demo = false;
-  return true;
+function lsPut(snap) { try { localStorage.setItem(LS_KEY, JSON.stringify(snap)); return true; } catch { return false; } }
+const txCount = () => Object.values(S.months).reduce((n, l) => n + l.length, 0);
+
+async function initStore() {
+  try { store.idb = await idbOpen(); } catch { store.idb = null; }
+  const fromIdb = store.idb ? await idbGet("data") : null, fromLs = lsGet();
+  const pick = [fromIdb, fromLs].filter(d => d && d.settings).sort((a, b) => String(b.savedAt || "").localeCompare(String(a.savedAt || "")))[0];
+  const lsWorks = (() => { try { localStorage.setItem("runway.probe", "1"); localStorage.removeItem("runway.probe"); return true; } catch { return false; } })();
+  store.mode = store.idb ? "idb" : lsWorks ? "local" : "none";
+  if (pick) { applySnapshot(pick); if (store.idb && pick !== fromIdb) idbPut("data", pick); }
+  if (store.idb) {
+    const h = await idbGet("backupHandle");
+    if (h && typeof h.queryPermission === "function") { store.fileHandle = h; store.fileName = h.name; store.filePerm = await queryPerm(h); }
+  }
+  try { if (navigator.storage && navigator.storage.persist) store.persisted = (await navigator.storage.persisted()) || (await navigator.storage.persist()); } catch {}
+  S.loading = false; render();
 }
-function initStore() {
-  store.mode = (() => { try { localStorage.setItem("runway.probe", "1"); localStorage.removeItem("runway.probe"); return "local"; } catch { return "none"; } })();
-  loadSaved();
-  S.loading = false;
-  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch {}
-  render();
-}
+
 let deferred = false;
 function renderSoon() {
   const ae = document.activeElement;
@@ -657,21 +718,41 @@ function renderSoon() {
   render();
 }
 document.addEventListener("focusout", () => { if (deferred) { deferred = false; setTimeout(renderSoon, 0); } });
-// the same site open in another tab changed the data
-window.addEventListener("storage", e => { if (e.key === LS_KEY) { if (!loadSaved()) { S.months = {}; S.demo = true; buildDemo(); } renderSoon(); } });
+// the same site open in another tab saved newer data
+window.addEventListener("storage", e => {
+  if (e.key !== LS_KEY || !e.newValue) return;
+  try { const d = JSON.parse(e.newValue); if (d && d.settings) { applySnapshot(d); renderSoon(); } } catch {}
+});
 
 const busy = {};
+let saveT = null;
 function persist() {
   if (S.demo) return;
-  if (!lsSet()) toast(store.mode === "none" ? "This browser can't save. Download a backup before you leave." : "Saving failed. This device may be out of storage; download a backup.");
-  setSaveState();
+  store.dirty = true; setSaveState();
+  clearTimeout(saveT); saveT = setTimeout(flushSave, 250);
 }
-function eraseAll() {
+async function flushSave() {
+  clearTimeout(saveT);
+  if (!store.dirty || S.demo) return;
+  const snap = snapshot();
+  const okIdb = store.idb ? await idbPut("data", snap) : false;
+  const okLs = lsPut(snap);
+  store.dirty = false; setSaveState();
+  if (!okIdb && !okLs) toast("Saving failed. This device may be out of storage. Back up now from the Budget tab.");
+  scheduleFileBackup();
+}
+// leaving the page: write the quick copy synchronously so nothing is lost mid-save
+window.addEventListener("pagehide", () => { if (store.dirty && !S.demo) lsPut(snapshot()); });
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") flushSave(); });
+
+async function eraseAll() {
+  if (store.idb) await idbDel("data");
   try { localStorage.removeItem(LS_KEY); } catch {}
-  S.months = {}; S.demo = true; S.year = null; buildDemo(); render(); toast("All your data was erased from this device. You're looking at example data again.");
+  S.months = {}; S.demo = true; S.year = null; buildDemo(); render();
+  toast(store.fileHandle ? "Erased from this device. Your backup file still has your last saved data." : "All your data was erased from this device. You're looking at example data again.");
 }
 
-/* ---------- files & backups ---------- */
+/* ---------- backups ---------- */
 function saveFile(filename, data, type) {
   const blob = data instanceof Blob ? data : new Blob([data], { type });
   const url = URL.createObjectURL(blob);
@@ -679,26 +760,117 @@ function saveFile(filename, data, type) {
   setTimeout(() => URL.revokeObjectURL(url), 5000);
 }
 const lastBackup = () => { try { return localStorage.getItem(LS_BACKUP); } catch { return null; } };
-function downloadBackup() {
-  const data = JSON.stringify({ app: "runway", version: 2, exportedAt: new Date().toISOString(), settings: S.settings, months: S.months });
-  saveFile(`runway-backup-${todayISO()}.json`, data, "application/json");
-  try { localStorage.setItem(LS_BACKUP, todayISO()); } catch {}
-  render(); toast("Backup downloaded. Keep it somewhere safe, like Files or iCloud Drive.");
+function markBackedUp() { try { localStorage.setItem(LS_BACKUP, todayISO()); } catch {} }
+const daysSince = iso => iso ? Math.floor((Date.now() - dateObj(iso).getTime()) / 864e5) : null;
+
+async function backupNow() {
+  if (S.demo) { toast("Start your own budget first. There's nothing of yours to back up yet."); return; }
+  await flushSave();
+  const json = JSON.stringify(snapshot()), name = `runway-database-${todayISO()}.json`;
+  let file = null; try { file = new File([json], name, { type: "application/json" }); } catch {}
+  if (file && isTouch() && navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: "Runway database" }); markBackedUp(); render(); toast("Backed up. Saving it to iCloud Drive keeps a copy off this phone."); return; }
+    catch (e) { if (e && e.name === "AbortError") return; }
+  }
+  saveFile(name, json, "application/json"); markBackedUp(); render(); toast("Database file downloaded. Keep it in iCloud Drive, Google Drive or another safe place.");
 }
-async function restoreBackup(file) {
+
+// Laptop (Chrome / Edge): one file on disk that Runway rewrites after every change
+async function queryPerm(h) { try { return await h.queryPermission({ mode: "readwrite" }); } catch { return "denied"; } }
+async function linkBackupFile() {
+  try {
+    const h = await window.showSaveFilePicker({ suggestedName: "runway-database.json", types: [{ description: "Runway database", accept: { "application/json": [".json"] } }] });
+    store.fileHandle = h; store.fileName = h.name; store.filePerm = "granted";
+    if (store.idb) await idbPut("backupHandle", h);
+    await writeBackupFile(); render();
+    toast(`Auto-backup is on. Every change is saved to ${h.name}.`);
+  } catch (e) { if (!e || e.name !== "AbortError") toast("Couldn't set up the backup file. Try a different folder."); }
+}
+async function resumeBackupFile() {
+  try { store.filePerm = await store.fileHandle.requestPermission({ mode: "readwrite" }); } catch { store.filePerm = "denied"; }
+  if (store.filePerm === "granted") { await writeBackupFile(); toast("Auto-backup resumed."); }
+  render();
+}
+async function unlinkBackupFile() { store.fileHandle = null; store.fileName = ""; store.filePerm = null; if (store.idb) await idbDel("backupHandle"); render(); toast("Auto-backup turned off. The file itself was left where it is."); }
+let fileT = null;
+function scheduleFileBackup() { if (!store.fileHandle || store.filePerm !== "granted" || S.demo) return; clearTimeout(fileT); fileT = setTimeout(writeBackupFile, 1200); }
+async function writeBackupFile() {
+  if (!store.fileHandle || S.demo) return;
+  try { const w = await store.fileHandle.createWritable(); await w.write(JSON.stringify(snapshot())); await w.close(); store.lastFileWrite = new Date(); markBackedUp(); }
+  catch { store.filePerm = await queryPerm(store.fileHandle); }
+  setSaveState();
+}
+
+// Importing a database file: merge (keep both) or replace
+const dbImp = { data: null, fileName: "" };
+async function openDbImport(file) {
   let d = null; try { d = JSON.parse(await file.text()); } catch {}
-  if (!d || d.app !== "runway" || !d.settings) { toast("That file isn't a Runway backup. Choose a file named runway-backup-….json."); return; }
-  S.settings = normalizeSettings(d.settings); kwIndex = null; S.months = {};
-  for (const [mk, list] of Object.entries(d.months || {})) if (/^\d{4}-\d{2}$/.test(mk)) S.months[mk] = (list || []).map(normalizeTx);
-  S.demo = false; S.year = null; persist(); S.tab = "overview"; render();
-  toast(`Restored ${Object.values(S.months).flat().length} transactions from your backup.`);
+  if (!d || d.app !== "runway" || !d.settings) { toast("That isn't a Runway database file. Choose a file named runway-database….json."); return; }
+  dbImp.data = d; dbImp.fileName = file.name;
+  const months = cleanMonths(d.months), n = Object.values(months).reduce((a, l) => a + l.length, 0);
+  const mks = Object.keys(months).filter(mk => months[mk].length).sort();
+  $("#importBody").innerHTML = `<div class="dlg-h"><h2>Import a database file</h2><button class="btn ghost sm" data-close>Close</button></div>
+    <p style="margin:0"><strong>${esc(file.name)}</strong>${d.savedAt ? `, saved ${esc(dateLong(d.savedAt.slice(0, 10)))} ${esc(d.savedAt.slice(0, 4))}` : ""}. It holds <strong>${n.toLocaleString(LOCALE)}</strong> transactions${mks.length ? (mks.length === 1 ? ` for ${esc(monthYear(mks[0]))}` : ` from ${esc(monthYear(mks[0]))} to ${esc(monthYear(mks[mks.length - 1]))}`) : ""}.</p>
+    ${S.demo ? `<p class="muted" style="margin:0">This device has no budget yet, so the file becomes your budget here.</p>`
+      : `<p class="muted" style="margin:0">This device has ${txCount().toLocaleString(LOCALE)} transactions. <strong>Merge</strong> adds anything from the file that isn't here yet and keeps everything you already have. <strong>Replace</strong> throws away what's on this device and uses the file instead.</p>`}
+    <div class="dlg-f">${S.demo ? `<button class="btn primary" data-action="db-merge">Load this database</button>` : `<button class="btn danger left" data-action="db-replace">Replace everything</button><button class="btn primary" data-action="db-merge">Merge into this device</button>`}</div>`;
+  $("#importDialog").showModal();
 }
+function dbMerge() {
+  const d = dbImp.data; if (!d) return;
+  const incoming = cleanMonths(d.months);
+  if (S.demo) { applySnapshot({ settings: d.settings, months: incoming }); persist(); $("#importDialog").close(); S.tab = "overview"; render(); toast(`Loaded ${txCount().toLocaleString(LOCALE)} transactions.`); return; }
+  const ids = new Set(Object.values(S.months).flat().map(t => t.id));
+  const have = {}; for (const t of Object.values(S.months).flat()) { const k = t.fp || fpOfTx(t); have[k] = (have[k] || 0) + 1; }
+  let added = 0;
+  for (const [mk, list] of Object.entries(incoming)) for (const t of list) {
+    if (ids.has(t.id)) continue;
+    const k = t.fp || fpOfTx(t); if (have[k] > 0) { have[k]--; continue; }
+    (S.months[mk] = S.months[mk] || []).push(t); added++;
+  }
+  for (const mk of Object.keys(S.months)) S.months[mk].sort((a, b) => a.date.localeCompare(b.date));
+  const inS = normalizeSettings(d.settings);
+  S.settings.rules = { ...inS.rules, ...S.settings.rules };
+  for (const c of inS.categories) if (!catById(c.id)) S.settings.categories.splice(S.settings.categories.length - 1, 0, c);
+  kwIndex = null; persist(); $("#importDialog").close(); render();
+  toast(added ? `Merged: added ${added.toLocaleString(LOCALE)} ${added === 1 ? "transaction" : "transactions"} this device didn't have.` : "Nothing new: this device already had everything in that file.");
+}
+function dbReplace(btn) {
+  if (!btn.classList.contains("armed")) { btn.classList.add("armed"); btn.textContent = "Tap again to replace everything"; return; }
+  const d = dbImp.data; if (!d) return;
+  applySnapshot({ settings: d.settings, months: cleanMonths(d.months) }); persist(); $("#importDialog").close(); S.tab = "overview"; render();
+  toast(`Replaced. This device now has ${txCount().toLocaleString(LOCALE)} transactions from the file.`);
+}
+
 function backupNudge() {
-  if (S.demo) return "";
-  const n = Object.values(S.months).flat().length, lb = lastBackup();
-  const stale = !lb || (Date.now() - dateObj(lb).getTime()) > 30 * 864e5;
-  if (n < 15 || !stale) return "";
-  return `<section class="card span-12 callout-card"><p>Your budget lives only on this device. ${lb ? `Your last backup was on ${esc(dateLong(lb))}.` : "You haven't made a backup yet."} Download one now and then so a cleared browser or a new phone doesn't lose it.</p><button class="btn" data-action="backup">Download backup</button></section>`;
+  if (S.demo || (store.fileHandle && store.filePerm === "granted")) return "";
+  const lb = lastBackup(), age = daysSince(lb);
+  if (txCount() < 15 || (lb && age < 14)) return "";
+  return `<section class="card span-12 callout-card"><p>Your budget is stored only on this device. ${lb ? `Your last backup was ${age} days ago.` : "You haven't backed it up yet."} A backup is one file you can keep in iCloud Drive and import on any phone or laptop.</p><button class="btn" data-action="backup-now">Back up now</button></section>`;
+}
+function dataCardHTML() {
+  const lb = lastBackup(), age = daysSince(lb), n = txCount();
+  const where = store.mode === "idb" ? "Offline database on this device, with a second copy as a safety net" : store.mode === "local" ? "Browser storage on this device" : "This browser can't save. Back up before you leave";
+  const fileRow = !canLinkFile ? "" : store.fileHandle
+    ? (store.filePerm === "granted"
+      ? `<div class="kv"><span>Auto-backup file</span><b>${esc(store.fileName)} <span class="pill good">On</span></b><span class="muted">${store.lastFileWrite ? "Last written " + esc(store.lastFileWrite.toLocaleTimeString(LOCALE, { hour: "numeric", minute: "2-digit" })) : "Rewritten after every change"}</span><button class="btn ghost sm" data-action="unlink-file">Turn off</button></div>`
+      : `<div class="kv"><span>Auto-backup file</span><b>${esc(store.fileName)} <span class="pill warn">Paused</span></b><span class="muted">Your browser needs permission again after a restart.</span><button class="btn sm" data-action="resume-file">Allow and resume</button></div>`)
+    : `<div class="kv"><span>Auto-backup file</span><b>Off</b><span class="muted">Pick a file once (in iCloud Drive or Google Drive for an off-device copy). Runway rewrites it after every change.</span><button class="btn sm" data-action="link-file">Choose backup file</button></div>`;
+  return `<section class="card span-12"><div class="card-h"><h2>Your data & backups</h2><span class="sub">Runway works fully offline. Nothing is ever uploaded.</span></div>
+    <div class="kvs">
+      <div class="kv"><span>Stored in</span><b>${esc(where)}</b><span class="muted">${S.demo ? "Example data isn't saved" : `${n.toLocaleString(LOCALE)} transactions`}${store.persisted ? " · protected from automatic clearing" : isTouch() ? " · add Runway to your Home Screen so Safari keeps it" : ""}</span></div>
+      <div class="kv"><span>Last backup</span><b>${lb ? esc(dateLong(lb)) + (age ? ` (${age} ${age === 1 ? "day" : "days"} ago)` : " (today)") : "Never"}</b><span class="muted">${isTouch() ? "On iPhone, Back up now opens the share sheet. Choose Save to Files → iCloud Drive." : "Back up now downloads one database file."}</span><button class="btn sm${!lb && !S.demo ? " primary" : ""}" data-action="backup-now">Back up now</button></div>
+      ${fileRow}
+      <div class="kv"><span>Restore or move</span><b>Import a database file</b><span class="muted">Merge a backup from your other phone or laptop, or restore after losing data.</span><button class="btn sm" data-action="db-import">Import database file</button></div>
+    </div>
+    <input type="file" id="dbFile" accept=".json,application/json" hidden>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px">
+      <button class="btn" data-action="import">Import bank statement</button>
+      <button class="btn" data-action="export">Export transactions to CSV</button>
+      ${S.demo ? `<button class="btn primary" data-action="setup">Start my budget</button>` : `<button class="btn danger" data-action="reset" id="resetBtn">Erase all my data</button>`}
+    </div>
+    <p class="muted" style="margin:12px 0 0;font-size:.85rem;max-width:75ch">Anyone you share the link with gets their own empty budget on their own device. Learned merchant rules: ${Object.keys(S.settings.rules).length}.</p>
+  </section>`;
 }
 
 /* ============================================================
@@ -1048,8 +1220,8 @@ function viewYear() {
 
 function txFiltered() {
   const q = S.txSearch.trim().toLowerCase();
-  const list = q ? Object.values(S.months).flat() : (S.months[S.txMonth] || []);
-  return list.filter(t => (S.txCat === "all" || (S.txCat === "income" ? t.type === "income" : t.type !== "income" && t.cat === S.txCat)) && (!q || t.desc.toLowerCase().includes(q) || t.note.toLowerCase().includes(q) || catName(t.cat).toLowerCase().includes(q)))
+  const list = q || S.txCat === "needs" ? Object.values(S.months).flat() : (S.months[S.txMonth] || []);
+  return list.filter(t => (S.txCat === "all" || (S.txCat === "needs" && t.type !== "income" && t.cat === "other" && t.auto) || (S.txCat === "income" ? t.type === "income" : S.txCat !== "needs" && t.type !== "income" && t.cat === S.txCat)) && (!q || t.desc.toLowerCase().includes(q) || t.note.toLowerCase().includes(q) || catName(t.cat).toLowerCase().includes(q)))
     .sort((a, b) => b.date.localeCompare(a.date));
 }
 function txListHTML() {
@@ -1065,11 +1237,11 @@ function viewTx() {
   return `<div class="toolbar">
       <div class="monthnav"><button data-action="tx-prev" aria-label="Previous month" ${mk <= minMk ? "disabled" : ""}>‹</button><span>${esc(monthYear(mk))}</span><button data-action="tx-next" aria-label="Next month" ${mk >= curMK() ? "disabled" : ""}>›</button></div>
       <input class="in grow" id="txSearch" type="search" placeholder="Search all months: merchant, note or category" value="${esc(S.txSearch)}">
-      <select class="in" id="txCat" style="width:auto" aria-label="Filter by category"><option value="all">All categories</option><option value="income"${S.txCat === "income" ? " selected" : ""}>Income</option>${S.settings.categories.map(c => `<option value="${esc(c.id)}"${S.txCat === c.id ? " selected" : ""}>${esc(c.name)}</option>`).join("")}</select>
+      <select class="in" id="txCat" style="width:auto" aria-label="Filter by category"><option value="all">All categories</option><option value="needs"${S.txCat === "needs" ? " selected" : ""}>Needs a category</option><option value="income"${S.txCat === "income" ? " selected" : ""}>Income</option>${S.settings.categories.map(c => `<option value="${esc(c.id)}"${S.txCat === c.id ? " selected" : ""}>${esc(c.name)}</option>`).join("")}</select>
       <button class="btn" data-action="import">Import statement</button>
       <button class="btn ghost" data-action="export">Export</button>
     </div>
-    ${unsorted.length ? `<div class="callout"><p><strong>${unsorted.length}</strong> ${unsorted.length === 1 ? "payment didn't" : "payments didn't"} match any category and landed in Other. These are often UPI transfers to people. Pick a category on one and Runway applies it to every payment to that person or shop.</p></div>` : ""}
+    ${unsorted.length ? `<div class="callout"><p><strong>${unsorted.length}</strong> ${unsorted.length === 1 ? "payment didn't" : "payments didn't"} match any category and landed in Other. These are often UPI transfers to people. Pick a category on one and Runway applies it to every payment to that person or shop.</p>${S.txCat !== "needs" ? `<button class="btn sm" data-action="needs-review">Review them</button>` : ""}</div>` : ""}
     <section class="card"><div id="txList">${txListHTML()}</div></section>`;
 }
 
@@ -1104,17 +1276,7 @@ function viewBudget() {
       <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap"><button class="btn" data-action="addcat">+ Add category</button></div>
       <p class="muted" style="margin:12px 0 0;font-size:.85rem"><strong>Fixed bill</strong>: rent, EMIs, recharges and your maid's salary are set aside up front, so your daily number only covers everyday spending. <strong>Savings & SIP</strong>: money moved into mutual funds, PPF or FDs counts as saved, not spent.</p>
     </section>
-    <section class="card span-12"><div class="card-h"><h2>Your data</h2></div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-        <button class="btn" data-action="import">Import bank statement</button>
-        <button class="btn" data-action="export">Export all to CSV</button>
-        ${S.demo ? "" : `<button class="btn" data-action="backup">Download backup</button>`}
-        <button class="btn" data-action="restore">Restore from backup</button>
-        <input type="file" id="restoreFile" accept=".json,application/json" hidden>
-        ${S.demo ? `<button class="btn primary" data-action="setup">Start my budget</button>` : `<button class="btn danger" data-action="reset" id="resetBtn">Erase all my data</button>`}
-      </div>
-      <p class="muted" style="margin:12px 0 0;font-size:.85rem;max-width:75ch">Your budget lives only in this browser on this device and is never uploaded. Anyone you share the link with gets their own empty budget. To move your data to another phone or laptop, download a backup here and restore it there. ${S.demo ? "" : `Last backup: ${lastBackup() ? esc(dateLong(lastBackup())) : "never"}.`} On iPhone, add Runway to your Home Screen so Safari keeps your data.</p>
-    </section></div>`;
+    ${dataCardHTML()}</div>`;
 }
 
 const VIEWS = { overview: viewOverview, review: viewReview, tx: viewTx, year: viewYear, budget: viewBudget };
@@ -1124,7 +1286,8 @@ function setSaveState() {
   let s = "demo", t = "Example data";
   if (S.demo) t = S.loading ? "Example data · loading yours" : "Example data";
   else if (anyBusy) { s = "busy"; t = "Saving…"; }
-  else if (store.mode === "local") { s = "local"; t = "Saved on this device"; }
+  else if (store.dirty) { s = "busy"; t = "Saving…"; }
+  else if (store.mode === "idb" || store.mode === "local") { s = "local"; t = "Saved offline"; }
   else { s = "none"; t = "Not saved"; }
   el.dataset.s = s; el.textContent = t;
 }
@@ -1316,7 +1479,8 @@ $("#txForm").addEventListener("submit", e => {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) { toast("Pick a date."); return; }
   const cat = ed.type === "income" ? "" : $("#fCat").value;
   const auto = ed.type === "income" ? true : !ed.catTouched;
-  const tx = normalizeTx({ id: ed.id || newId(), date, desc, amount, type: ed.type, cat, auto, note: $("#fNote").value.trim() });
+  const old = ed.id ? (S.months[ed.mk] || []).find(t => t.id === ed.id) : null;
+  const tx = normalizeTx({ id: ed.id || newId(), date, desc, amount, type: ed.type, cat, auto, note: $("#fNote").value.trim(), src: old ? old.src : "manual", fp: old && old.fp, ref: old && old.ref });
   const touched = new Set();
   if (ed.id) { S.months[ed.mk] = (S.months[ed.mk] || []).filter(t => t.id !== ed.id); touched.add(ed.mk); }
   const mk = mkOf(date); (S.months[mk] = S.months[mk] || []).push(tx); S.months[mk].sort((a, b) => a.date.localeCompare(b.date)); touched.add(mk);
@@ -1374,14 +1538,17 @@ function openSetup(fromAdd) {
     if (wasDemo) { S.months = {}; S.demo = false; S.year = null; }
     persist("settings");
     $("#setupDialog").close(); S.tab = "overview"; render();
-    toast(store.mode === "local" ? "Your budget is set up. It's saved on this device." : "Your budget is set up, but this browser can't save it. Download a backup before you leave.");
+    toast(store.mode !== "none" ? "Your budget is set up. It's saved offline on this device." : "Your budget is set up, but this browser can't save it. Download a backup before you leave.");
     if (fromAdd) setTimeout(() => openTx(curMK(), null), 250);
   };
   $("#setupDialog").showModal();
 }
 
 /* ============================================================
-   Bank statement import (CSV) / export
+   Bank statement import: CSV or Excel → check columns → review
+   categories. Uploading an overlapping statement again only adds
+   the rows Runway hasn't seen; payments you already typed in by
+   hand are matched instead of doubled.
    ============================================================ */
 function parseCSV(text) {
   const first = (text.split(/\r?\n/).find(l => /date/i.test(l)) || text.split(/\r?\n/, 1)[0] || "");
@@ -1401,6 +1568,7 @@ function parseCSV(text) {
 }
 function parseDate(s, fmtHint) {
   s = String(s || "").trim(); if (!s) return null;
+  if (/^\d{5}(\.\d+)?$/.test(s) && +s > 30000 && +s < 60000) { const d = new Date(Date.UTC(1899, 11, 30) + Math.floor(+s) * 864e5); return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`; }
   let m = s.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/);
   if (m) return `${m[1]}-${pad(+m[2])}-${pad(+m[3])}`;
   m = s.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{2,4})/);
@@ -1409,15 +1577,51 @@ function parseDate(s, fmtHint) {
   if (m) { const mo = MONTHS3.indexOf(m[2].toLowerCase()) + 1; let y = +m[3]; if (y < 100) y += 2000; if (mo) return `${y}-${pad(mo)}-${pad(+m[1])}`; }
   const t = Date.parse(s); return isNaN(t) ? null : isoOf(new Date(t));
 }
-const imp = { rows: null, head: null, map: null, sign: "neg", dfmt: "dmy", income: true };
+
+// Excel support is loaded only when an Excel file is chosen (it's cached for offline use)
+let xlsxLoading = null;
+function loadXLSX() {
+  if (window.XLSX) return Promise.resolve();
+  return xlsxLoading || (xlsxLoading = new Promise((res, rej) => {
+    const s = document.createElement("script"); s.src = "vendor/xlsx.full.min.js";
+    s.onload = () => res(); s.onerror = () => { xlsxLoading = null; rej(new Error("xlsx")); };
+    document.head.appendChild(s);
+  }));
+}
+const cellText = c => c instanceof Date ? (t => `${t.getUTCFullYear()}-${pad(t.getUTCMonth() + 1)}-${pad(t.getUTCDate())}`)(new Date(c.getTime() + 432e5)) : String(c ?? "");
+async function readStatementFile(file) {
+  const name = (file.name || "").toLowerCase();
+  if (/\.pdf$/.test(name) || file.type === "application/pdf") throw new Error("pdf");
+  if (/\.(xlsx|xls|xlsm|ods)$/.test(name)) {
+    await loadXLSX();
+    const wb = window.XLSX.read(await file.arrayBuffer(), { type: "array", cellDates: true });
+    let best = null;
+    for (const sn of wb.SheetNames) {
+      const rows = window.XLSX.utils.sheet_to_json(wb.Sheets[sn], { header: 1, raw: true, defval: "" }).map(r => r.map(cellText)).filter(r => r.some(c => c.trim()));
+      const score = rows.filter(r => r.some(c => /date/i.test(c))).length * 1e4 + rows.length;
+      if (!best || score > best.score) best = { rows, score };
+    }
+    return best ? best.rows : [];
+  }
+  return parseCSV(await file.text());
+}
+
+// A fingerprint survives later edits, so a re-uploaded row is recognised even if you renamed it
+const normDesc = d => String(d || "").toLowerCase().replace(/[^a-z0-9]+/g, "").slice(0, 80);
+const fpOf = (date, type, amount, desc) => `${date}|${type === "income" ? "i" : "e"}|${(+amount).toFixed(2)}|${normDesc(desc)}`;
+const fpOfTx = t => fpOf(t.date, t.type, t.amount, t.desc);
+const validRef = r => { r = String(r || "").trim(); return r.length >= 6 && /\d/.test(r) && !/^0+$/.test(r) ? r : ""; };
+
+const imp = { rows: null, head: null, map: null, sign: "neg", dfmt: "dmy", income: true, fileName: "", cands: [], view: "needs" };
 function guessMap(head, rows) {
   const h = head.map(x => x.toLowerCase().trim()), find = re => h.findIndex(x => re.test(x));
   const map = {
-    date: find(/^(txn |tran |transaction |value )?date|^date/),
+    date: find(/^(txn |tran |transaction |posting )?date|^date/),
     desc: find(/narration|description|remarks|particular|details|merchant|payee|memo|^name/),
     debit: find(/withdraw|debit|paid out|money out|^dr\b/),
     credit: find(/deposit|credit|paid in|money in|^cr\b/),
     amount: find(/^(transaction |txn )?amount|^amt\b|amount \(inr|amount\(inr/),
+    ref: find(/ref|chq|cheque|utr|transaction id|txn id/),
   };
   if (map.date < 0) map.date = find(/date|posted|time/);
   if (map.date < 0) map.date = 0;
@@ -1427,91 +1631,170 @@ function guessMap(head, rows) {
   if (map.mode === "single" && map.amount < 0) map.amount = map.debit >= 0 ? map.debit : h.findIndex((x, i) => i !== map.date && !/balance/.test(x) && rows.slice(0, 10).every(r => !isNaN(parseAmt(r[i])) || !r[i]));
   return map;
 }
+function lastImport() { const l = S.settings.imports; return Array.isArray(l) && l[0] ? l[0] : null; }
 function openImport() { if (S.demo) { openSetup(false); toast("Set up your plan first, then import."); return; } renderImportPick(); $("#importDialog").showModal(); }
 function renderImportPick() {
+  const li = lastImport();
   $("#importBody").innerHTML = `<div class="dlg-h"><h2>Import your bank statement</h2><button class="btn ghost sm" data-close>Close</button></div>
-    <p class="muted" style="margin:0">In net banking (HDFC, SBI, ICICI, Axis, Kotak and others), open your account statement, pick the month, and download it as CSV. If your bank only offers Excel, open the file and use <em>Save As → CSV</em>. Runway reads UPI narrations, sorts each payment into a category, and skips ones you've already imported.</p>
-    <div class="drop"><input type="file" id="csvFile" accept=".csv,text/csv,.txt"><span class="muted">or paste the CSV text below</span><textarea class="in" id="csvPaste" rows="4" placeholder="Date,Narration,Withdrawal Amt.,Deposit Amt.&#10;01/10/26,UPI-SWIGGY LIMITED-swiggy@axisbank-...,386.00,"></textarea><button class="btn" id="csvPasteGo">Use pasted text</button></div>`;
-  $("#csvFile").onchange = async e => { const file = e.target.files[0]; if (file) loadImportText(await file.text()); };
-  $("#csvPasteGo").onclick = () => loadImportText($("#csvPaste").value);
+    ${li ? `<div class="callout" style="margin:0"><p>Your last import covered up to <strong>${esc(dateLong(li.to))}</strong>. Upload a newer statement, even one that overlaps, and Runway adds only what's new.</p></div>` : ""}
+    <p class="muted" style="margin:0">In net banking or your bank's app (HDFC, SBI, ICICI, Axis, Kotak and others), open the account statement, pick the dates, and download it as <strong>Excel or CSV</strong>. Runway reads UPI narrations, sorts each payment into a category, and lets you check them before anything is saved.</p>
+    <div class="drop"><input type="file" id="csvFile" accept=".csv,.xls,.xlsx,.txt,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+      <span class="muted">PDF statements can't be read. Choose Excel or CSV when you download.</span>
+      <details style="width:100%"><summary class="muted" style="cursor:pointer">Or paste CSV text</summary><textarea class="in" id="csvPaste" rows="4" style="margin-top:8px" placeholder="Date,Narration,Withdrawal Amt.,Deposit Amt.&#10;01/10/26,UPI-SWIGGY LIMITED-swiggy@axisbank-...,386.00,"></textarea><button class="btn" id="csvPasteGo" style="margin-top:8px">Use pasted text</button></details>
+    </div>`;
+  $("#csvFile").onchange = async e => {
+    const file = e.target.files[0]; if (!file) return;
+    try { loadImportRows(await readStatementFile(file), file.name); }
+    catch (err) { toast(err && err.message === "pdf" ? "PDF statements can't be read. Download the statement as Excel or CSV instead." : err && err.message === "xlsx" ? "Excel support didn't load. Connect to the internet once, or save the statement as CSV." : "Runway couldn't read that file. Try the CSV version of your statement."); }
+  };
+  $("#csvPasteGo").onclick = () => loadImportRows(parseCSV($("#csvPaste").value || ""), "pasted text");
 }
-function loadImportText(text) {
-  const rows = parseCSV(text || "");
-  if (rows.length < 2) { toast("That file has no rows Runway can read. Check it's a CSV export."); return; }
+function loadImportRows(rows, fileName) {
+  if (!rows || rows.length < 2) { toast("That file has no rows Runway can read. Check it's a statement export."); return; }
   let hi = rows.findIndex(r => r.some(c => /date/i.test(c)) && r.filter(c => /[a-z]/i.test(c)).length >= 3);
   if (hi < 0) hi = 0;
-  imp.head = rows[hi].map((c, i) => c.trim() || `Column ${i + 1}`);
-  imp.rows = rows.slice(hi + 1).filter(r => r.length >= 2 && !/^\*+$/.test((r[0] || "").trim()));
+  imp.fileName = fileName;
+  imp.head = rows[hi].map((c, i) => String(c).trim() || `Column ${i + 1}`);
+  imp.rows = rows.slice(hi + 1).filter(r => r.length >= 2 && !/^\*+$/.test(String(r[0] || "").trim()));
   imp.map = guessMap(imp.head, imp.rows);
   const amts = imp.map.mode === "single" ? imp.rows.map(r => parseAmt(r[imp.map.amount])).filter(v => !isNaN(v)) : [];
   imp.sign = imp.map.amount === imp.map.debit ? "pos" : amts.filter(v => v < 0).length >= amts.length / 2 ? "neg" : "pos";
   imp.dfmt = imp.rows.some(r => { const m = String(r[imp.map.date] || "").match(/^\d{1,2}[-/.](\d{1,2})[-/.]/); return m && +m[1] > 12; }) ? "mdy" : "dmy";
-  renderImportMap();
+  analyzeImport(); renderImportMap();
 }
-function importParsed() {
+function analyzeImport() {
   const m = imp.map, out = [];
-  for (const r of imp.rows) {
-    const date = parseDate(r[m.date], imp.dfmt); const desc = String(r[m.desc] ?? "").trim().replace(/\s+/g, " ");
+  imp.rows.forEach((r, i) => {
+    const date = parseDate(r[m.date], imp.dfmt), desc = String(r[m.desc] ?? "").trim().replace(/\s+/g, " ");
     let v;
-    if (m.mode === "single") { v = parseAmt(r[m.amount]); if (isNaN(v)) continue; if (imp.sign === "pos") v = -v; }
-    else { const db = Math.abs(parseAmt(r[m.debit]) || 0), cr = Math.abs(parseAmt(r[m.credit]) || 0); v = cr - db; if (!db && !cr) continue; }
-    if (!date || !desc || !v) continue;
-    const type = v < 0 ? "expense" : "income";
-    if (type === "income" && !imp.income) continue;
-    const s = type === "expense" ? suggest(desc) : { cat: "" };
-    out.push(normalizeTx({ id: newId(), date, desc, amount: Math.abs(v), type, cat: s.cat, auto: true }));
+    if (m.mode === "single") { v = parseAmt(r[m.amount]); if (isNaN(v)) return; if (imp.sign === "pos") v = -v; }
+    else { const db = Math.abs(parseAmt(r[m.debit]) || 0), cr = Math.abs(parseAmt(r[m.credit]) || 0); if (!db && !cr) return; v = cr - db; }
+    if (!date || !desc || !v || date > todayISO()) return;
+    const type = v < 0 ? "expense" : "income", amount = Math.round(Math.abs(v) * 100) / 100;
+    if (type === "income" && !imp.income) return;
+    const s = type === "expense" ? suggest(desc) : { cat: "", why: "income" };
+    out.push({ i, date, desc, amount, type, ref: m.ref >= 0 ? validRef(r[m.ref]) : "", fp: fpOf(date, type, amount, desc), cat: s.cat, why: s.why, kw: s.kw, status: "new", include: true, userSet: false });
+  });
+  // 1) rows already imported before: count-based, so two genuine identical payments still both count
+  const all = Object.values(S.months).flat();
+  const fpHave = {}, refHave = {};
+  for (const t of all) { const k = t.fp || fpOfTx(t); fpHave[k] = (fpHave[k] || 0) + 1; if (t.ref) refHave[t.ref] = (refHave[t.ref] || 0) + 1; }
+  for (const c of out) {
+    if (c.ref && refHave[c.ref] > 0) { refHave[c.ref]--; if (fpHave[c.fp] > 0) fpHave[c.fp]--; c.status = "known"; }
+    else if (fpHave[c.fp] > 0) { fpHave[c.fp]--; c.status = "known"; }
   }
-  const seen = new Set(Object.values(S.months).flat().map(t => `${t.date}|${t.amount.toFixed(2)}|${t.desc.toLowerCase()}`));
-  const fresh = [], dupes = [];
-  for (const t of out) { const k = `${t.date}|${t.amount.toFixed(2)}|${t.desc.toLowerCase()}`; (seen.has(k) ? dupes : fresh).push(t); seen.add(k); }
-  return { fresh, dupes };
+  // 2) payments you typed in by hand: same amount, within 3 days, not yet linked to a bank row
+  const manual = all.filter(t => t.src !== "bank" && !t.fp);
+  const used = new Set();
+  for (const c of out) {
+    if (c.status !== "new") continue;
+    const hit = manual.find(t => !used.has(t.id) && t.type === c.type && Math.abs(t.amount - c.amount) < 0.01 && Math.abs(dateObj(t.date) - dateObj(c.date)) <= 3 * 864e5);
+    if (hit) { used.add(hit.id); c.status = "manual"; c.include = false; c.manualId = hit.id; c.manualMk = mkOf(hit.date); c.manualDesc = hit.desc; }
+  }
+  imp.cands = out;
 }
+const impNew = () => imp.cands.filter(c => c.status === "new" || (c.status === "manual" && c.include));
+const impNeeds = () => impNew().filter(c => c.type === "expense" && c.cat === "other" && !c.userSet);
+const rangeText = list => { if (!list.length) return ""; const ds = list.map(c => c.date).sort(); return ds[0] === ds[ds.length - 1] ? dateLong(ds[0]) : `${dateLong(ds[0])} – ${dateLong(ds[ds.length - 1])}`; };
 function renderImportMap() {
   const m = imp.map, opts = sel => imp.head.map((h, i) => `<option value="${i}"${i === sel ? " selected" : ""}>${esc(h)}</option>`).join("");
-  const { fresh, dupes } = importParsed();
-  const exp = fresh.filter(t => t.type === "expense"), unmatched = exp.filter(t => t.cat === "other").length;
-  $("#importBody").innerHTML = `<div class="dlg-h"><h2>Check the columns</h2><button class="btn ghost sm" data-close>Close</button></div>
-    <div class="settings-row">
-      <label class="field">Date column<select class="in" id="imDate">${opts(m.date)}</select></label>
-      <label class="field">Narration / description<select class="in" id="imDesc">${opts(m.desc)}</select></label>
-      <label class="field">Date format<select class="in" id="imDfmt"><option value="dmy"${imp.dfmt === "dmy" ? " selected" : ""}>Day first (03/10/2026)</option><option value="mdy"${imp.dfmt === "mdy" ? " selected" : ""}>Month first (10/03/2026)</option></select></label>
-    </div>
-    <div class="settings-row">
-      <label class="field">Amounts are in<select class="in" id="imMode"><option value="split"${m.mode === "split" ? " selected" : ""}>Separate withdrawal & deposit columns</option><option value="single"${m.mode === "single" ? " selected" : ""}>One amount column</option></select></label>
-      ${m.mode === "single" ? `<label class="field">Amount column<select class="in" id="imAmt">${opts(m.amount)}</select></label>
-      <label class="field">Spending shows as<select class="in" id="imSign"><option value="neg"${imp.sign === "neg" ? " selected" : ""}>Negative numbers (−386.00)</option><option value="pos"${imp.sign === "pos" ? " selected" : ""}>Positive numbers (386.00)</option></select></label>`
-      : `<label class="field">Withdrawal (money out)<select class="in" id="imDeb">${opts(m.debit)}</select></label><label class="field">Deposit (money in)<select class="in" id="imCred">${opts(m.credit)}</select></label>`}
-    </div>
-    <label class="switch"><input type="checkbox" id="imInc"${imp.income ? " checked" : ""}>Import money coming in (salary, refunds) as income</label>
-    <div class="scroll-x"><table class="preview"><thead><tr><th>Date</th><th>Paid to</th><th>Category</th><th style="text-align:right">Amount</th></tr></thead><tbody>
-      ${fresh.slice(0, 8).map(t => `<tr><td>${esc(t.date)}</td><td>${esc(prettyMerchant(t.desc))}</td><td>${t.type === "income" ? "Income" : esc(catName(t.cat))}</td><td class="r">${t.type === "income" ? "+" : "−"}${esc(money(t.amount, { cents: true }))}</td></tr>`).join("") || `<tr><td colspan="4" class="muted">No rows could be read with these settings. Try another column.</td></tr>`}
-    </tbody></table></div>
-    <p class="muted" style="margin:0;font-size:.88rem">${fresh.length} new: ${exp.length} payments and ${fresh.length - exp.length} income${dupes.length ? `, ${dupes.length} already imported and skipped` : ""}. ${exp.length ? `${exp.length - unmatched} sorted automatically${unmatched ? `, ${unmatched} go to Other for you to sort` : ""}.` : ""}</p>
-    <div class="dlg-f"><button class="btn ghost" id="imBack">Choose another file</button><button class="btn primary" id="imGo"${fresh.length ? "" : " disabled"}>Import ${fresh.length} transactions</button></div>`;
+  const c = imp.cands, known = c.filter(x => x.status === "known"), manual = c.filter(x => x.status === "manual"), fresh = impNew();
+  const ok = c.length > 0;
+  $("#importBody").innerHTML = `<div class="dlg-h"><h2>${ok ? "What's in this statement" : "Check the columns"}</h2><button class="btn ghost sm" data-close>Close</button></div>
+    ${ok ? `<div class="imp-sum">
+      <div><span>Statement</span><b>${c.length} rows</b><i>${esc(rangeText(c))}</i></div>
+      <div><span>Already in Runway</span><b>${known.length}</b><i>${known.length ? "skipped · " + esc(rangeText(known)) : "none"}</i></div>
+      <div class="hi"><span>New</span><b>${fresh.length}</b><i>${fresh.length ? esc(rangeText(fresh)) : "nothing to add"}</i></div>
+    </div>` : `<p class="muted" style="margin:0">Runway couldn't find transactions with these columns. Pick the right ones below.</p>`}
+    ${manual.length ? `<div class="matches"><p style="margin:0 0 6px"><strong>${manual.length}</strong> ${manual.length === 1 ? "payment looks like one" : "payments look like ones"} you already added by hand. They'll be linked instead of added twice. Tick any that are actually different.</p>
+      ${manual.map((x, k) => `<label class="switch"><input type="checkbox" data-match="${k}"${x.include ? " checked" : ""}> ${esc(dateNice(x.date))} · ${esc(prettyMerchant(x.desc))} · ${esc(money(x.amount, { cents: true }))} <span class="muted">matches "${esc(prettyMerchant(x.manualDesc))}"</span></label>`).join("")}</div>` : ""}
+    <details class="cols"${ok ? "" : " open"}><summary>Columns: ${esc(imp.head[m.date] || "?")} · ${esc(imp.head[m.desc] || "?")} · ${esc(m.mode === "split" ? `${imp.head[m.debit] || "?"} / ${imp.head[m.credit] || "?"}` : imp.head[m.amount] || "?")}${m.ref >= 0 ? " · " + esc(imp.head[m.ref]) : ""}</summary>
+      <div class="settings-row" style="margin-top:12px">
+        <label class="field">Date column<select class="in" id="imDate">${opts(m.date)}</select></label>
+        <label class="field">Narration / description<select class="in" id="imDesc">${opts(m.desc)}</select></label>
+        <label class="field">Date format<select class="in" id="imDfmt"><option value="dmy"${imp.dfmt === "dmy" ? " selected" : ""}>Day first (03/10/2026)</option><option value="mdy"${imp.dfmt === "mdy" ? " selected" : ""}>Month first (10/03/2026)</option></select></label>
+      </div>
+      <div class="settings-row" style="margin-top:12px">
+        <label class="field">Amounts are in<select class="in" id="imMode"><option value="split"${m.mode === "split" ? " selected" : ""}>Separate withdrawal & deposit columns</option><option value="single"${m.mode === "single" ? " selected" : ""}>One amount column</option></select></label>
+        ${m.mode === "single" ? `<label class="field">Amount column<select class="in" id="imAmt">${opts(m.amount)}</select></label>
+        <label class="field">Spending shows as<select class="in" id="imSign"><option value="neg"${imp.sign === "neg" ? " selected" : ""}>Negative numbers (−386.00)</option><option value="pos"${imp.sign === "pos" ? " selected" : ""}>Positive numbers (386.00)</option></select></label>`
+        : `<label class="field">Withdrawal (money out)<select class="in" id="imDeb">${opts(m.debit)}</select></label><label class="field">Deposit (money in)<select class="in" id="imCred">${opts(m.credit)}</select></label>`}
+      </div>
+      <label class="switch" style="margin-top:12px"><input type="checkbox" id="imInc"${imp.income ? " checked" : ""}>Import money coming in (salary, refunds) as income</label>
+    </details>
+    <div class="dlg-f"><button class="btn ghost left" id="imBack">Choose another file</button>${fresh.length ? `<button class="btn primary" id="imNext">Next: check categories</button>` : `<span class="muted">${ok ? "Everything in this statement is already in Runway." : ""}</span>`}</div>`;
   const re = () => {
     m.date = +$("#imDate").value; m.desc = +$("#imDesc").value; imp.dfmt = $("#imDfmt").value; imp.income = $("#imInc").checked;
     const mode = $("#imMode").value;
     if (mode !== m.mode) { m.mode = mode; if (mode === "split") { if (m.debit < 0) m.debit = 0; if (m.credit < 0) m.credit = 0; } else if (m.amount < 0) m.amount = 0; }
     else if (mode === "single") { m.amount = +$("#imAmt").value; imp.sign = $("#imSign").value; } else { m.debit = +$("#imDeb").value; m.credit = +$("#imCred").value; }
-    renderImportMap();
+    analyzeImport(); renderImportMap();
   };
-  $("#importBody").querySelectorAll("select,input[type=checkbox]").forEach(el => el.onchange = re);
+  $("#importBody").querySelectorAll(".cols select, .cols input[type=checkbox]").forEach(el => el.onchange = re);
+  $("#importBody").querySelectorAll("[data-match]").forEach(el => el.onchange = () => { manual[+el.dataset.match].include = el.checked; renderImportMap(); });
   $("#imBack").onclick = renderImportPick;
-  $("#imGo").onclick = () => {
-    const { fresh } = importParsed(); const touched = new Set();
-    for (const t of fresh) { const mk = mkOf(t.date); (S.months[mk] = S.months[mk] || []).push(t); touched.add(mk); }
-    touched.forEach(mk => { S.months[mk].sort((a, b) => a.date.localeCompare(b.date)); persist("m-" + mk); });
-    $("#importDialog").close();
-    const latest = [...touched].sort().pop(); if (latest) S.txMonth = latest > curMK() ? curMK() : latest;
-    S.tab = "tx"; render();
-    toast(`Imported ${fresh.length} transactions across ${touched.size} ${touched.size === 1 ? "month" : "months"}.`);
-  };
+  if ($("#imNext")) $("#imNext").onclick = () => { imp.view = impNeeds().length ? "needs" : "all"; renderImportReview(); };
+}
+function impRow(c) {
+  const k = imp.cands.indexOf(c), inc = c.type === "income";
+  const badge = inc ? `<span class="chip">Income</span>` : c.userSet ? `<span class="tag">you picked</span>` : c.why === "learned" ? `<span class="tag">learned</span>` : c.why === "keyword" ? `<span class="tag">auto</span>` : `<span class="tag warn">no match</span>`;
+  return `<div class="tx imp-row" data-k="${k}">
+    <div class="tx-main" style="cursor:default"><span class="tx-desc">${esc(prettyMerchant(c.desc))}</span><span class="tx-meta">${esc(dateNice(c.date))} · ${esc(c.desc)}</span></div>
+    ${inc ? badge : `<span class="imp-cat">${badge}<select class="catpick${c.cat === "other" && !c.userSet ? " unsorted" : ""}" id="ir-${k}" data-imp="${k}" aria-label="Category for ${esc(prettyMerchant(c.desc))}">${catOptions(c.cat)}</select></span>`}
+    <span class="tx-amt ${inc ? "pos" : ""}">${inc ? "+" : ""}${esc(money(c.amount, { cents: true }))}</span></div>`;
+}
+function renderImportReview() {
+  const fresh = impNew(), needs = impNeeds();
+  const list = imp.view === "needs" ? fresh.filter(c => c.type === "expense" && (c.cat === "other" || c.userSet) && (c.why === "none" || c.userSet)) : fresh;
+  $("#importBody").innerHTML = `<div class="dlg-h"><h2>Check categories</h2><button class="btn ghost sm" data-close>Close</button></div>
+    <div class="imp-tabs" role="group" aria-label="Which rows to show">
+      <button type="button" data-view="needs" aria-pressed="${imp.view === "needs"}">Needs a category <b id="needsN">${needs.length}</b></button>
+      <button type="button" data-view="all" aria-pressed="${imp.view === "all"}">All new <b>${fresh.length}</b></button>
+    </div>
+    <p class="muted" style="margin:0;font-size:.88rem">${imp.view === "needs" ? (list.length ? "These didn't match any category. Pick one and every payment to the same shop or person follows, now and in future imports." : "Everything was sorted automatically. Switch to All new to double-check them.") : "Every new row with the category Runway picked. Change any that look wrong; Runway learns from it."}</p>
+    <div class="imp-list" id="impList">${list.map(impRow).join("") || `<div class="empty" style="padding:20px"><p style="margin:0">Nothing to check here.</p></div>`}</div>
+    <div class="dlg-f"><button class="btn ghost left" id="imBack2">Back</button><button class="btn primary" id="imGo">Add ${fresh.length} ${fresh.length === 1 ? "transaction" : "transactions"}</button></div>`;
+  $("#importBody").querySelectorAll("[data-view]").forEach(b => b.onclick = () => { imp.view = b.dataset.view; renderImportReview(); });
+  $("#imBack2").onclick = renderImportMap;
+  $("#imGo").onclick = commitImport;
+  $("#impList").addEventListener("change", e => {
+    const sel = e.target.closest("[data-imp]"); if (!sel) return;
+    const c = imp.cands[+sel.dataset.imp]; c.cat = sel.value; c.userSet = true; sel.classList.remove("unsorted");
+    const key = merchantKey(c.desc); let follow = 0;
+    if (key) for (const o of impNew()) if (o !== c && !o.userSet && o.type === "expense" && merchantKey(o.desc) === key) { o.cat = c.cat; o.why = "learned"; follow++; const s2 = document.getElementById("ir-" + imp.cands.indexOf(o)); if (s2) { s2.value = c.cat; s2.classList.remove("unsorted"); } }
+    const tag = sel.parentElement.querySelector(".tag"); if (tag) { tag.className = "tag"; tag.textContent = "you picked"; }
+    $("#needsN").textContent = impNeeds().length;
+    if (follow) toast(`${follow} more "${prettyMerchant(c.desc)}" ${follow === 1 ? "payment" : "payments"} moved to ${catName(c.cat)} too.`);
+  });
+}
+function commitImport() {
+  const fresh = impNew(), touched = new Set();
+  for (const c of fresh) {
+    const t = normalizeTx({ id: newId(), date: c.date, desc: c.desc, amount: c.amount, type: c.type, cat: c.type === "income" ? "" : c.cat, auto: !c.userSet, src: "bank", fp: c.fp, ref: c.ref });
+    const mk = mkOf(c.date); (S.months[mk] = S.months[mk] || []).push(t); touched.add(mk);
+    if (c.userSet) { const k = merchantKey(c.desc); if (k) S.settings.rules[k] = c.cat; }
+  }
+  let linked = 0;
+  for (const c of imp.cands) if (c.status === "manual" && !c.include) {
+    const t = (S.months[c.manualMk] || []).find(x => x.id === c.manualId);
+    if (t) { t.fp = c.fp; if (c.ref) t.ref = c.ref; linked++; touched.add(c.manualMk); }
+  }
+  touched.forEach(mk => S.months[mk].sort((a, b) => a.date.localeCompare(b.date)));
+  const all = imp.cands, ds = all.map(c => c.date).sort();
+  const rec = { at: todayISO(), file: imp.fileName.slice(0, 80), from: ds[0], to: ds[ds.length - 1], added: fresh.length, skipped: all.filter(c => c.status === "known").length, linked };
+  S.settings.imports = [rec, ...(S.settings.imports || [])].slice(0, 24);
+  persist();
+  $("#importDialog").close();
+  const latest = fresh.map(c => mkOf(c.date)).sort().pop();
+  if (latest) S.txMonth = latest > curMK() ? curMK() : latest;
+  S.tab = "tx"; S.txCat = "all"; S.txSearch = ""; render();
+  toast(`Added ${fresh.length} new ${fresh.length === 1 ? "transaction" : "transactions"}${fresh.length ? ` (${rangeText(fresh)})` : ""}.${rec.skipped ? ` Skipped ${rec.skipped} already imported.` : ""}${linked ? ` Linked ${linked} you'd added by hand.` : ""}`);
 }
 async function exportCSV() {
   const rows = [["Date", "Description", "Paid to", "Category", "Type", "Amount (INR)", "Note"]];
   Object.values(S.months).flat().sort((a, b) => a.date.localeCompare(b.date)).forEach(t => rows.push([t.date, t.desc, prettyMerchant(t.desc), t.type === "income" ? "Income" : catName(t.cat), t.type, (t.type === "income" ? t.amount : -t.amount).toFixed(2), t.note]));
   const csv = rows.map(r => r.map(c => /[",\n]/.test(String(c)) ? `"${String(c).replace(/"/g, '""')}"` : c).join(",")).join("\n");
-  saveFile(`runway-transactions-${todayISO()}.csv`, "\ufeff" + csv, "text/csv");
+  saveFile(`runway-transactions-${todayISO()}.csv`, "﻿" + csv, "text/csv");
 }
 
 /* ============================================================
@@ -1535,11 +1818,14 @@ document.addEventListener("click", e => {
   else if (act === "import") openImport();
   else if (act === "export") exportCSV();
   else if (act === "setup") openSetup(false);
-  else if (act === "backup") downloadBackup();
-  else if (act === "restore") {
-    if (!S.demo && !a.classList.contains("armed")) { a.classList.add("armed", "danger"); a.textContent = "Replaces this device's data. Tap again"; setTimeout(() => { if (a.isConnected) { a.classList.remove("armed", "danger"); a.textContent = "Restore from backup"; } }, 5000); return; }
-    $("#restoreFile").click();
-  }
+  else if (act === "backup-now") backupNow();
+  else if (act === "db-import") $("#dbFile").click();
+  else if (act === "db-merge") dbMerge();
+  else if (act === "db-replace") dbReplace(a);
+  else if (act === "link-file") linkBackupFile();
+  else if (act === "resume-file") resumeBackupFile();
+  else if (act === "unlink-file") unlinkBackupFile();
+  else if (act === "needs-review") { S.tab = "tx"; S.txCat = "needs"; S.txSearch = ""; render(); scrollTo({ top: 0 }); }
   else if (act === "addcat") {
     const id = "c" + newId().slice(0, 6);
     S.settings.categories.splice(S.settings.categories.length - 1, 0, { id, name: "New category", budget: 0, kind: "everyday", keywords: [] });
@@ -1561,7 +1847,7 @@ document.addEventListener("click", e => {
 });
 document.addEventListener("change", e => {
   const t = e.target;
-  if (t.id === "restoreFile") { if (t.files[0]) restoreBackup(t.files[0]); t.value = ""; return; }
+  if (t.id === "dbFile") { if (t.files[0]) openDbImport(t.files[0]); t.value = ""; return; }
   if (t.classList.contains("catpick")) { recategorize(t.dataset.mk, t.dataset.id, t.value); return; }
   if (t.id === "txCat") { S.txCat = t.value; $("#txList").innerHTML = txListHTML(); return; }
   if (t.dataset.setting) { S.settings[t.dataset.setting] = Math.max(0, parseAmt(t.value) || 0); persist("settings"); $("#planSummary").innerHTML = planSummaryHTML(); return; }

@@ -3,13 +3,19 @@
 A private budget and expense tracker in rupees. Live at **https://akreus29.github.io/runway/**
 
 - **Safe to spend per day**: how much you can spend each day for the rest of the month and still finish on plan. Fixed bills (rent, EMIs, recharges) are set aside first.
-- **Automatic categories** for Indian merchants and UPI narrations (Swiggy, Blinkit, Rapido, BESCOM, Groww and more). It learns from every category you pick.
-- **Bank statement import** from CSV (HDFC, SBI, ICICI, Axis and others: withdrawal/deposit columns, day-first dates).
+- **Bank statement import** (Excel or CSV from HDFC, SBI, ICICI, Axis, Kotak and others). Upload a statement as often as you like, even overlapping ones: Runway adds only the rows it hasn't seen, and links payments you already typed in by hand instead of doubling them.
+- **Automatic categories** for Indian merchants and UPI narrations, then a review step: check only the payments that didn't match, or every new row. Pick a category once and every payment to that shop or person follows, now and in future imports.
 - **Last-month review, Year view and a year-end Wrapped** you can save as an image.
 
-## Your data stays on your device
+## Works offline, keeps your data
 
-There are no accounts and no server. Everything is stored in your browser on the device you use. Anyone you share the link with gets their own empty budget. To move your data to another device, use **Budget → Download backup**, then **Restore from backup** on the other device.
+There are no accounts and no server. After the first visit the whole app, including fonts and Excel support, works with no connection.
+
+Your data lives in an on-device database (IndexedDB) with a second copy in browser storage. To make sure you never lose it:
+
+- **Back up now** (Budget tab) saves one database file. On iPhone it opens the share sheet: choose *Save to Files → iCloud Drive*.
+- **Auto-backup file** (Chrome or Edge on a laptop): pick a file once and Runway rewrites it after every change.
+- **Import database file** merges a backup from your other device (keeps both) or replaces what's there.
 
 ## Install on iPhone
 
@@ -17,4 +23,4 @@ Open the link in Safari, tap **Share → Add to Home Screen**. It opens full-scr
 
 ## Development
 
-It's a single static page (`index.html`) with a small service worker (`sw.js`). No build step. Open `index.html` through any static server to run it locally.
+A static site with no build step: `index.html`, a service worker (`sw.js`), local fonts in `fonts/`, and SheetJS in `vendor/` for reading Excel statements. Serve the folder with any static server to run it locally. Bump `CACHE` in `sw.js` when you change files so installed copies update.
